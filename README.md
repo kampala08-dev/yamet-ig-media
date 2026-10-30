@@ -21,3 +21,12 @@ dokumen internal, atau file lain di sini.
 
 Foto: JPEG, rasio 4:5 sampai 1.91:1, maks. 8 MB.
 Reels: MP4 H.264 + AAC, 9:16, 3 detik–15 menit.
+
+## Generator jadwal bergambar (`jadwal/`)
+
+- `jadwal/index.html`: halaman generator, disajikan oleh workflow n8n **24 - Jadwal Bergambar**
+  di `https://n8n-hc8x.srv2014501.hstgr.cloud/webhook/jadwal`.
+- `jadwal/ikon/`: ikon kegiatan bergaya YAMET (`<kegiatan>-L.jpg` anak laki-laki, `-P.jpg` perempuan),
+  dibuat dengan MiniMax image-01.
+- Kartu bergambar wajah anak dibuat lewat `POST /webhook/jadwal/buat` (butuh kode akses).
+  Foto anak tidak disimpan di repo ini maupun di riwayat n8n.

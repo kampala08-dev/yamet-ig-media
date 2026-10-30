@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jadwal Bergambar · YAMET Palembang</title>
+<meta name="description" content="Buat jadwal harian bergambar untuk si kecil, siap cetak. Dari YAMET Child Development Center Palembang.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--yellow:#FFD84A;--yellow-soft:#FFF4C7;--green:#17614A;--green-soft:#E3F0EA;--ink:#1E2A24;--muted:#5C6B63;--line:#E8DDB0;--card:#FFFFFF;--danger:#B3261E;--radius:16px}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--yellow-soft);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:16px;line-height:1.5}
+h1,h2,h3{font-family:Poppins,system-ui,sans-serif;letter-spacing:-.01em;margin:0}
+.top{background:var(--green);color:#fff;padding:20px 16px 26px}
+.top .wrap{max-width:760px;margin:0 auto}
+.brand{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--yellow);font-weight:700}
+.top h1{font-size:28px;line-height:1.15;margin-top:6px}
+.top p{margin:8px 0 0;color:#DDEDE6;max-width:560px}
+main{max-width:760px;margin:-14px auto 0;padding:0 16px 40px}
+section{background:var(--card);border-radius:var(--radius);padding:18px 16px;margin-bottom:14px;box-shadow:0 2px 0 rgba(23,97,74,.08)}
+section h2{font-size:18px;display:flex;gap:10px;align-items:center}
+.num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--yellow);color:var(--green);font-size:14px;flex:none}
+.hint{color:var(--muted);font-size:14px;margin:6px 0 12px}
+label{font-weight:600;font-size:14px;display:block;margin:12px 0 6px}
+input[type=text],input[type=time],input[type=password]{font:inherit;width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+input:focus{outline:3px solid rgba(23,97,74,.25);border-color:var(--green)}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button,.chip{font:inherit;font-weight:600;font-size:14px;border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:8px 14px;cursor:pointer}
+.seg button[aria-pressed=true],.chip[aria-pressed=true]{background:var(--green);border-color:var(--green);color:#fff}
+.btn{font:inherit;font-weight:700;border:0;border-radius:12px;padding:12px 16px;cursor:pointer;background:var(--green);color:#fff;display:inline-flex;gap:8px;align-items:center;justify-content:center}
+.btn.alt{background:var(--yellow);color:var(--green)}
+.btn.ghost{background:transparent;color:var(--green);border:1.5px solid var(--green)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.full{width:100%}
+.photo-row{display:flex;gap:12px;align-items:center}
+.avatar{width:64px;height:64px;border-radius:50%;background:var(--yellow-soft) center/cover no-repeat;border:2px dashed var(--line);flex:none}
+.avatar.has{border:3px solid var(--yellow)}
+.rows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.row{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center;background:var(--yellow-soft);border-radius:14px;padding:8px}
+.row img{width:64px;height:64px;border-radius:10px;object-fit:cover;background:#fff;display:block}
+.thumb{position:relative;border:0;padding:0;background:none;cursor:pointer;border-radius:10px}
+.thumb .tag{position:absolute;left:3px;bottom:3px;font-size:10px;font-weight:700;background:rgba(255,255,255,.9);color:var(--green);border-radius:6px;padding:0 5px}
+.fields{display:grid;grid-template-columns:96px 1fr;gap:6px;min-width:0}
+.fields input{padding:8px 9px;font-size:15px}
+.tools{display:flex;flex-direction:column;gap:4px}
+.icon-btn{width:34px;height:30px;border-radius:8px;border:1.5px solid var(--line);background:#fff;cursor:pointer;font-size:14px;color:var(--ink);display:grid;place-items:center}
+.icon-btn.del{color:var(--danger)}
+.add-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:10px}
+.add-grid button{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:6px;cursor:pointer;font:inherit;font-size:12px;font-weight:600;color:var(--ink)}
+.add-grid img{width:100%;aspect-ratio:1;border-radius:8px;object-fit:cover;display:block;margin-bottom:4px}
+details.ai{border:2px solid var(--yellow);border-radius:14px;padding:0 14px}
+details.ai summary{cursor:pointer;font-weight:700;padding:14px 0;color:var(--green)}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:14px;font-weight:500;margin:12px 0}
+.consent input{margin-top:4px;width:18px;height:18px;flex:none}
+.status{font-size:14px;margin-top:10px;color:var(--muted);min-height:20px}
+.status.err{color:var(--danger)}
+.status.ok{color:var(--green);font-weight:600}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.sheet{position:fixed;inset:0;background:rgba(30,42,36,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.sheet.open{display:flex}
+.sheet .panel{background:#fff;width:100%;max-width:760px;max-height:85vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px}
+.sheet .panel h3{font-size:17px;margin-bottom:6px}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:10px 16px 30px}
+footer a{color:var(--green)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:420px){.fields{grid-template-columns:1fr}.top h1{font-size:24px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brand">YAMET Palembang · Gratis</div>
+  <h1>Jadwal Bergambar untuk Si Kecil</h1>
+  <p>Susun kegiatan harian anak dengan gambar dan jam, lalu cetak. Jadwal yang bisa dilihat membantu anak tahu apa yang terjadi berikutnya, jadi lebih tenang dan lebih mandiri.</p>
+</div></header>
+
+<main>
+<section aria-labelledby="h-anak">
+  <h2 id="h-anak"><span class="num">1</span>Data si kecil</h2>
+  <label for="nama">Nama panggilan</label>
+  <input id="nama" type="text" maxlength="24" placeholder="Contoh: Raka" autocomplete="off">
+  <label>Gambar karakter</label>
+  <div class="seg" id="gender">
+    <button type="button" data-g="L" aria-pressed="true">Anak laki-laki</button>
+    <button type="button" data-g="P" aria-pressed="false">Anak perempuan</button>
+  </div>
+  <label for="foto-papan">Foto si kecil di judul papan (opsional)</label>
+  <div class="photo-row">
+    <div class="avatar" id="avatar" aria-hidden="true"></div>
+    <div>
+      <input id="foto-papan" type="file" accept="image/*" class="sr">
+      <button type="button" class="btn ghost" id="btn-foto-papan">Pilih foto</button>
+      <button type="button" class="btn ghost" id="btn-hapus-foto" hidden>Hapus</button>
+      <div class="hint" style="margin:6px 0 0">Foto ini hanya diproses di HP Mama Papa, tidak dikirim ke mana pun.</div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-template">
+  <h2 id="h-template"><span class="num">2</span>Pilih template</h2>
+  <p class="hint">Jam dan kegiatannya bisa diubah di langkah berikutnya.</p>
+  <div class="seg" id="templates"></div>
+</section>
+
+<section aria-labelledby="h-daftar">
+  <h2 id="h-daftar"><span class="num">3</span>Atur kegiatan &amp; jam</h2>
+  <p class="hint">Ketuk gambar untuk menggantinya dengan foto asli (misalnya sikat gigi milik si kecil). Foto nyata sering lebih mudah dipahami anak.</p>
+  <ol class="rows" id="rows"></ol>
+  <div class="actions"><button type="button" class="btn alt" id="btn-tambah">+ Tambah kegiatan</button></div>
+</section>
+
+<section aria-labelledby="h-ai">
+  <h2 id="h-ai"><span class="num">4</span>Kartu bergambar si kecil <small style="font-weight:600;color:var(--muted)">(opsional)</small></h2>
+  <details class="ai">
+    <summary>Khusus pasien YAMET: ubah gambar jadi mirip si kecil</summary>
+    <p class="hint">Dari satu foto wajah, kami gambar ulang tiap kegiatan dengan gaya kartun yang mirip si kecil. Butuh kode akses dari terapis YAMET. Prosesnya sekitar 30–60 detik.</p>
+    <label for="kode">Kode akses</label>
+    <input id="kode" type="password" autocomplete="off" placeholder="Minta ke terapis YAMET">
+    <label for="foto-wajah">Foto wajah si kecil</label>
+    <input id="foto-wajah" type="file" accept="image/*">
+    <p class="hint">Pakai foto terang, wajah menghadap depan, tanpa orang lain.</p>
+    <label class="consent"><input type="checkbox" id="setuju"><span>Saya orang tua/wali anak ini. Saya setuju foto dikirim ke layanan AI (MiniMax) hanya untuk membuat kartu ini. YAMET tidak menyimpan foto setelah kartu jadi.</span></label>
+    <button type="button" class="btn full" id="btn-ai">Buat kartu bergambar</button>
+    <div class="status" id="ai-status" role="status" aria-live="polite"></div>
+  </details>
+</section>
+
+<section aria-labelledby="h-unduh">
+  <h2 id="h-unduh"><span class="num">5</span>Unduh &amp; cetak</h2>
+  <p class="hint">PDF A4: halaman pertama papan jadwal dengan kotak centang, halaman berikutnya kartu untuk digunting dan ditempel (pakai perekat/velcro supaya bisa dipindah).</p>
+  <button type="button" class="btn full" id="btn-pdf">Unduh PDF jadwal</button>
+  <div class="status" id="pdf-status" role="status" aria-live="polite"></div>
+</section>
+</main>
+
+<footer>Dibuat oleh <a href="https://instagram.com/yametpalembang" target="_blank" rel="noopener">@yametpalembang</a> · YAMET Child Development Center Palembang<br>Jl. Dempo Luar No. 558 · Materi bantu, bukan pengganti terapi.</footer>
+
+<div class="sheet" id="sheet-tambah" role="dialog" aria-modal="true" aria-labelledby="h-tambah">
+  <div class="panel">
+    <div style="display:flex;justify-content:space-between;align-items:center"><h3 id="h-tambah">Pilih kegiatan</h3><button type="button" class="icon-btn" data-close aria-label="Tutup">✕</button></div>
+    <div class="add-grid" id="add-grid"></div>
+  </div>
+</div>
+
+<div class="sheet" id="sheet-ganti" role="dialog" aria-modal="true" aria-labelledby="h-ganti">
+  <div class="panel">
+    <div style="display:flex;justify-content:space-between;align-items:center"><h3 id="h-ganti">Ganti gambar</h3><button type="button" class="icon-btn" data-close aria-label="Tutup">✕</button></div>
+    <div class="actions">
+      <button type="button" class="btn" id="btn-foto-sendiri">Pakai foto sendiri</button>
+      <button type="button" class="btn ghost" id="btn-pakai-ikon">Kembali ke gambar ikon</button>
+    </div>
+    <input type="file" accept="image/*" id="foto-baris" class="sr">
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  const ENDPOINT = 'https://n8n-hc8x.srv2014501.hstgr.cloud/webhook/jadwal/buat';
+  const ICON_BASE = 'https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/ikon/';
+  const ACTS = {
+    bangun: 'Bangun tidur', toilet: 'Ke toilet', mandi: 'Mandi', sikat_gigi: 'Sikat gigi', pakai_baju: 'Pakai baju',
+    sarapan: 'Sarapan', berangkat: 'Berangkat', sekolah: 'Sekolah', terapi: 'Terapi', makan_siang: 'Makan siang',
+    tidur_siang: 'Tidur siang', main: 'Bermain', belajar: 'Mewarnai / belajar', salat: 'Salat & berdoa', mengaji: 'Mengaji',
+    makan_malam: 'Makan malam', beres_mainan: 'Beres-beres mainan', baju_tidur: 'Pakai baju tidur', cuci_kaki: 'Cuci kaki',
+    minum_air: 'Minum air putih', dongeng: 'Dengar dongeng', tidur: 'Tidur malam'
+  };
+  const T = (list) => list.map(([time, key, label]) => ({ time, key, label: label || ACTS[key] }));
+  const TEMPLATES = {
+    sekolah: { name: 'Hari sekolah', rows: T([['05:30','bangun'],['05:40','toilet'],['05:50','mandi'],['06:05','pakai_baju'],['06:15','sarapan'],['06:35','sikat_gigi'],['06:45','berangkat','Berangkat sekolah'],['07:00','sekolah'],['12:30','makan_siang'],['13:30','tidur_siang'],['15:30','main'],['16:30','mandi','Mandi sore'],['18:00','salat'],['18:30','makan_malam'],['19:15','belajar'],['19:45','beres_mainan'],['20:00','baju_tidur'],['20:10','sikat_gigi'],['20:20','dongeng'],['20:30','tidur']]) },
+    terapi: { name: 'Hari terapi', rows: T([['06:00','bangun'],['06:10','toilet'],['06:20','mandi'],['06:40','pakai_baju'],['07:00','sarapan'],['07:30','sikat_gigi'],['08:00','berangkat','Berangkat terapi'],['08:30','terapi','Terapi di YAMET'],['12:00','makan_siang'],['13:00','tidur_siang'],['15:00','main'],['16:30','mandi','Mandi sore'],['18:30','makan_malam'],['19:45','baju_tidur'],['19:55','sikat_gigi'],['20:05','dongeng'],['20:30','tidur']]) },
+    libur: { name: 'Akhir pekan', rows: T([['06:30','bangun'],['06:40','toilet'],['07:00','mandi'],['07:30','sarapan'],['08:30','main'],['10:30','beres_mainan'],['12:00','makan_siang'],['13:00','tidur_siang'],['15:30','main','Main di luar'],['16:30','mandi','Mandi sore'],['18:30','makan_malam'],['19:45','sikat_gigi'],['20:00','dongeng'],['20:30','tidur']]) },
+    malam: { name: 'Ritual malam', rows: T([['19:30','baju_tidur'],['19:40','cuci_kaki'],['19:45','sikat_gigi'],['19:55','minum_air'],['20:00','dongeng'],['20:15','tidur']]) },
+    kosong: { name: 'Mulai dari kosong', rows: [] }
+  };
+
+  const state = { name: '', gender: 'L', template: 'sekolah', rows: [], boardPhoto: null, ai: {} };
+  const $ = (s) => document.querySelector(s);
+  const store = {
+    get() { try { return JSON.parse(localStorage.getItem('yamet-jadwal') || 'null'); } catch (e) { return null; } },
+    set() { try { localStorage.setItem('yamet-jadwal', JSON.stringify({ name: state.name, gender: state.gender, template: state.template, rows: state.rows.map(r => ({ time: r.time, key: r.key, label: r.label })) })); } catch (e) { /* tidak apa-apa */ } }
+  };
+  const iconUrl = (key) => ICON_BASE + key + '-' + state.gender + '.jpg';
+  const imgFor = (r) => r.own || state.ai[r.key] || iconUrl(r.key);
+  const tagFor = (r) => r.own ? 'Foto' : (state.ai[r.key] ? 'AI' : '');
+  const fmtTime = (t) => (t || '').replace(':', '.');
+
+  function render() {
+    const ol = $('#rows');
+    ol.innerHTML = '';
+    if (!state.rows.length) {
+      const li = document.createElement('li');
+      li.className = 'hint';
+      li.textContent = 'Belum ada kegiatan. Ketuk "+ Tambah kegiatan".';
+      ol.appendChild(li);
+    }
+    state.rows.forEach((r, i) => {
+      const li = document.createElement('li');
+      li.className = 'row';
+      const tag = tagFor(r);
+      li.innerHTML =
+        '<button type="button" class="thumb" aria-label="Ganti gambar ' + escapeHtml(r.label) + '"><img alt="" src="' + imgFor(r) + '">' + (tag ? '<span class="tag">' + tag + '</span>' : '') + '</button>' +
+        '<div class="fields"><input type="time" aria-label="Jam" value="' + r.time + '"><input type="text" aria-label="Nama kegiatan" maxlength="28" value="' + escapeHtml(r.label) + '"></div>' +
+        '<div class="tools"><button type="button" class="icon-btn" data-act="up" aria-label="Naikkan">▲</button><button type="button" class="icon-btn" data-act="down" aria-label="Turunkan">▼</button><button type="button" class="icon-btn del" data-act="del" aria-label="Hapus">✕</button></div>';
+      const [tIn, lIn] = li.querySelectorAll('input');
+      tIn.addEventListener('change', () => { r.time = tIn.value; store.set(); });
+      lIn.addEventListener('input', () => { r.label = lIn.value; store.set(); });
+      li.querySelector('.thumb').addEventListener('click', () => openGanti(i));
+      li.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () => {
+        const a = b.dataset.act;
+        if (a === 'del') state.rows.splice(i, 1);
+        if (a === 'up' && i > 0) [state.rows[i - 1], state.rows[i]] = [state.rows[i], state.rows[i - 1]];
+        if (a === 'down' && i < state.rows.length - 1) [state.rows[i + 1], state.rows[i]] = [state.rows[i], state.rows[i + 1]];
+        store.set(); render();
+      }));
+      ol.appendChild(li);
+    });
+  }
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+  function renderTemplates() {
+    const box = $('#templates');
+    box.innerHTML = '';
+    Object.entries(TEMPLATES).forEach(([k, t]) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip'; b.textContent = t.name;
+      b.setAttribute('aria-pressed', String(k === state.template));
+      b.addEventListener('click', () => {
+        if (state.rows.length && !confirm('Ganti ke template "' + t.name + '"? Daftar kegiatan sekarang akan diganti.')) return;
+        state.template = k; state.rows = t.rows.map(r => Object.assign({}, r)); store.set(); renderTemplates(); render();
+      });
+      box.appendChild(b);
+    });
+  }
+  function renderAddGrid() {
+    const g = $('#add-grid');
+    g.innerHTML = '';
+    Object.entries(ACTS).forEach(([k, label]) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.innerHTML = '<img alt="" loading="lazy" src="' + (state.ai[k] || iconUrl(k)) + '">' + label;
+      b.addEventListener('click', () => {
+        const last = state.rows[state.rows.length - 1];
+        state.rows.push({ time: last ? last.time : '07:00', key: k, label });
+        store.set(); render(); closeSheets();
+        setTimeout(() => { const items = document.querySelectorAll('.row'); if (items.length) items[items.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50);
+      });
+      g.appendChild(b);
+    });
+  }
+
+  // sheets
+  let gantiIndex = -1;
+  function openGanti(i) { gantiIndex = i; $('#sheet-ganti').classList.add('open'); }
+  function closeSheets() { document.querySelectorAll('.sheet').forEach(s => s.classList.remove('open')); }
+  document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeSheets));
+  document.querySelectorAll('.sheet').forEach(s => s.addEventListener('click', e => { if (e.target === s) closeSheets(); }));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheets(); });
+  $('#btn-tambah').addEventListener('click', () => { renderAddGrid(); $('#sheet-tambah').classList.add('open'); });
+  $('#btn-foto-sendiri').addEventListener('click', () => $('#foto-baris').click());
+  $('#btn-pakai-ikon').addEventListener('click', () => { if (state.rows[gantiIndex]) delete state.rows[gantiIndex].own; closeSheets(); render(); });
+  $('#foto-baris').addEventListener('change', async (e) => {
+    const f = e.target.files[0]; e.target.value = '';
+    if (!f || !state.rows[gantiIndex]) return;
+    state.rows[gantiIndex].own = await squareImage(f, 640);
+    closeSheets(); render();
+  });
+
+  // gambar
+  function loadImg(src) { return new Promise((res, rej) => { const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => res(im); im.onerror = rej; im.src = src; }); }
+  async function fileToImg(file) { const url = URL.createObjectURL(file); try { return await loadImg(url); } finally { setTimeout(() => URL.revokeObjectURL(url), 2000); } }
+  async function squareImage(file, size) {
+    const im = await fileToImg(file);
+    const s = Math.min(im.naturalWidth, im.naturalHeight);
+    const c = document.createElement('canvas'); c.width = c.height = size;
+    c.getContext('2d').drawImage(im, (im.naturalWidth - s) / 2, (im.naturalHeight - s) / 2, s, s, 0, 0, size, size);
+    return c.toDataURL('image/jpeg', 0.88);
+  }
+  async function scaledImage(file, max) {
+    const im = await fileToImg(file);
+    const k = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight));
+    const c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.88);
+  }
+  async function circleImage(dataUrl, size) {
+    const im = await loadImg(dataUrl);
+    const c = document.createElement('canvas'); c.width = c.height = size;
+    const x = c.getContext('2d');
+    x.beginPath(); x.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2); x.closePath(); x.clip();
+    const s = Math.min(im.naturalWidth, im.naturalHeight);
+    x.drawImage(im, (im.naturalWidth - s) / 2, (im.naturalHeight - s) / 2, s, s, 0, 0, size, size);
+    return c.toDataURL('image/png');
+  }
+  const cache = {};
+  async function toDataUrl(src) {
+    if (src.startsWith('data:')) return src;
+    if (cache[src]) return cache[src];
+    const im = await loadImg(src);
+    const c = document.createElement('canvas'); c.width = im.naturalWidth; c.height = im.naturalHeight;
+    c.getContext('2d').drawImage(im, 0, 0);
+    return (cache[src] = c.toDataURL('image/jpeg', 0.9));
+  }
+
+  // data anak
+  $('#nama').addEventListener('input', e => { state.name = e.target.value.trim(); store.set(); });
+  document.querySelectorAll('#gender button').forEach(b => b.addEventListener('click', () => {
+    state.gender = b.dataset.g;
+    document.querySelectorAll('#gender button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    store.set(); render();
+  }));
+  $('#btn-foto-papan').addEventListener('click', () => $('#foto-papan').click());
+  $('#foto-papan').addEventListener('change', async e => {
+    const f = e.target.files[0]; e.target.value = '';
+    if (!f) return;
+    state.boardPhoto = await squareImage(f, 480);
+    const a = $('#avatar'); a.style.backgroundImage = 'url(' + state.boardPhoto + ')'; a.classList.add('has');
+    $('#btn-hapus-foto').hidden = false;
+  });
+  $('#btn-hapus-foto').addEventListener('click', () => {
+    state.boardPhoto = null; const a = $('#avatar'); a.style.backgroundImage = ''; a.classList.remove('has'); $('#btn-hapus-foto').hidden = true;
+  });
+
+  // AI
+  $('#btn-ai').addEventListener('click', async () => {
+    const st = $('#ai-status'); st.className = 'status';
+    const code = $('#kode').value.trim();
+    const f = $('#foto-wajah').files[0];
+    const keys = [...new Set(state.rows.map(r => r.key))];
+    if (!code) { st.className = 'status err'; st.textContent = 'Isi kode akses dulu.'; return; }
+    if (!f) { st.className = 'status err'; st.textContent = 'Pilih foto wajah si kecil.'; return; }
+    if (!$('#setuju').checked) { st.className = 'status err'; st.textContent = 'Centang persetujuan orang tua/wali dulu.'; return; }
+    if (!keys.length) { st.className = 'status err'; st.textContent = 'Daftar kegiatan masih kosong.'; return; }
+    const btn = $('#btn-ai'); btn.disabled = true;
+    let sec = 0; const timer = setInterval(() => { sec++; st.textContent = 'Sedang menggambar ' + Math.min(keys.length, 12) + ' kartu… ' + sec + ' detik'; }, 1000);
+    try {
+      const photo = await scaledImage(f, 768);
+      const resp = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code, gender: state.gender, photo, keys: keys.slice(0, 12) }) });
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok || !data.ok) throw new Error(data.error || ('Gagal (' + resp.status + ')'));
+      Object.assign(state.ai, data.cards || {});
+      const n = Object.keys(data.cards || {}).length;
+      st.className = 'status ok';
+      st.textContent = n + ' kartu jadi.' + (keys.length > 12 ? ' (Maksimal 12 kegiatan per sekali buat; sisanya tetap pakai ikon.)' : '') + (data.failed && data.failed.length ? ' Ada ' + data.failed.length + ' kartu yang gagal, tetap pakai ikon.' : '');
+      $('#foto-wajah').value = '';
+      render();
+    } catch (err) {
+      st.className = 'status err'; st.textContent = err.message;
+    } finally { clearInterval(timer); btn.disabled = false; }
+  });
+
+  // PDF
+  $('#btn-pdf').addEventListener('click', async () => {
+    const st = $('#pdf-status'); st.className = 'status';
+    if (!state.rows.length) { st.className = 'status err'; st.textContent = 'Tambahkan kegiatan dulu.'; return; }
+    const btn = $('#btn-pdf'); btn.disabled = true; st.textContent = 'Menyiapkan PDF…';
+    try { await buildPdf(); st.className = 'status ok'; st.textContent = 'PDF sudah diunduh. Cetak di kertas A4.'; }
+    catch (e) { console.error(e); st.className = 'status err'; st.textContent = 'Gagal membuat PDF: ' + e.message; }
+    finally { btn.disabled = false; }
+  });
+
+  async function buildPdf() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const GREEN = [23, 97, 74], YEL = [255, 216, 74], SOFT = [255, 246, 214], INK = [30, 42, 36], LINE = [240, 197, 49];
+    const rows = state.rows.slice();
+    const imgs = await Promise.all(rows.map(r => toDataUrl(imgFor(r))));
+    const title = 'Jadwal ' + (state.name || 'Harianku');
+    const footer = () => { doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(120, 120, 120); doc.text('Dibuat dengan generator Jadwal Bergambar YAMET Palembang · @yametpalembang', 105, 291, { align: 'center' }); };
+
+    // halaman papan
+    doc.setFillColor(...GREEN); doc.rect(0, 0, 210, 30, 'F');
+    let tx = 12;
+    if (state.boardPhoto) { const c = await circleImage(state.boardPhoto, 360); doc.addImage(c, 'PNG', 10, 4, 22, 22); tx = 38; }
+    doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.text(title, tx, 16);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...YEL); doc.text((TEMPLATES[state.template] || {}).name || 'Jadwal harian', tx, 24);
+    const cols = rows.length > 8 ? 2 : 1;
+    const per = Math.ceil(rows.length / cols);
+    const top = 36, bottom = 284, gap = 3, colGap = 6;
+    const rowH = Math.min(34, (bottom - top - (per - 1) * gap) / per);
+    const colW = (190 - (cols - 1) * colGap) / cols;
+    rows.forEach((r, i) => {
+      const c = Math.floor(i / per), k = i % per;
+      const x = 10 + c * (colW + colGap), y = top + k * (rowH + gap);
+      doc.setFillColor(...SOFT); doc.setDrawColor(...LINE); doc.setLineWidth(0.3); doc.roundedRect(x, y, colW, rowH, 3, 3, 'FD');
+      const s = rowH - 4;
+      doc.addImage(imgs[i], 'JPEG', x + 2, y + 2, s, s);
+      const box = Math.min(9, rowH * 0.4);
+      const textX = x + s + 6, textW = colW - s - 10 - box - 4;
+      const big = Math.min(16, rowH * 0.5), small = Math.min(13, rowH * 0.4);
+      doc.setTextColor(...GREEN); doc.setFont('helvetica', 'bold'); doc.setFontSize(big);
+      doc.text(fmtTime(r.time), textX, y + rowH / 2 - 0.5);
+      doc.setTextColor(...INK); doc.setFont('helvetica', 'normal'); doc.setFontSize(small);
+      const lines = doc.splitTextToSize(r.label, textW).slice(0, 2);
+      doc.text(lines, textX, y + rowH / 2 + small * 0.42);
+      doc.setDrawColor(...GREEN); doc.setLineWidth(0.6); doc.roundedRect(x + colW - box - 4, y + (rowH - box) / 2, box, box, 1.5, 1.5, 'S');
+    });
+    footer();
+
+    // halaman kartu gunting
+    const card = 55, lab = 8, cg = 8, rg = 5, cpr = 3, rpp = 4;
+    const x0 = (210 - cpr * card - (cpr - 1) * cg) / 2, y0 = 14;
+    rows.forEach((r, i) => {
+      const n = i % (cpr * rpp);
+      if (n === 0) {
+        doc.addPage();
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(...GREEN);
+        doc.text('Kartu kegiatan · gunting di garis putus-putus', 105, 9, { align: 'center' });
+        footer();
+      }
+      const cx = x0 + (n % cpr) * (card + cg), cy = y0 + Math.floor(n / cpr) * (card + lab + rg);
+      doc.addImage(imgs[i], 'JPEG', cx, cy, card, card);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(...INK);
+      doc.text(doc.splitTextToSize(r.label, card - 2)[0], cx + card / 2, cy + card + 5.5, { align: 'center' });
+      doc.setLineDashPattern([1.5, 1.2], 0); doc.setDrawColor(150, 150, 150); doc.setLineWidth(0.2);
+      doc.rect(cx - 1.5, cy - 1.5, card + 3, card + lab + 1.5);
+      doc.setLineDashPattern([], 0);
+    });
+    const safe = (state.name || 'si-kecil').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'si-kecil';
+    doc.save('jadwal-' + safe + '.pdf');
+  }
+
+  // mulai
+  const saved = store.get();
+  if (saved && Array.isArray(saved.rows)) {
+    Object.assign(state, { name: saved.name || '', gender: saved.gender === 'P' ? 'P' : 'L', template: TEMPLATES[saved.template] ? saved.template : 'sekolah', rows: saved.rows.filter(r => ACTS[r.key]) });
+    $('#nama').value = state.name;
+    document.querySelectorAll('#gender button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.g === state.gender)));
+  } else {
+    state.rows = TEMPLATES.sekolah.rows.map(r => Object.assign({}, r));
+  }
+  renderTemplates(); render();
+})();
+</script>
+</body>
+</html>

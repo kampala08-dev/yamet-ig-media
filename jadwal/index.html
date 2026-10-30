@@ -93,6 +93,12 @@ footer a{color:var(--green)}
     <button type="button" data-s="real" aria-pressed="true">Foto realistis</button>
     <button type="button" data-s="kartun" aria-pressed="false">Kartun</button>
   </div>
+  <label>Kartu ibadah</label>
+  <div class="seg" id="agama">
+    <button type="button" data-a="islam" aria-pressed="true">Islam</button>
+    <button type="button" data-a="kristen" aria-pressed="false">Kristen</button>
+    <button type="button" data-a="buddha" aria-pressed="false">Buddha</button>
+  </div>
   <label for="foto-papan">Foto si kecil di judul papan (opsional)</label>
   <div class="photo-row">
     <div class="avatar" id="avatar" aria-hidden="true"></div>
@@ -123,8 +129,9 @@ footer a{color:var(--green)}
   <p class="hint">Opsional. Gambar bawaan di atas sudah bisa langsung dipakai.</p>
   <details class="ai">
     <summary>Khusus pasien YAMET: semua gambar pakai wajah si kecil</summary>
-    <p class="hint">Dari satu foto wajah, kami buatkan <b>semua kartu kegiatan</b> dengan wajah si kecil, mengikuti gaya gambar di langkah 1, jadi template apa pun yang dipilih langsung memakai wajahnya. Butuh kode akses dari terapis YAMET (satu kode untuk sekali buat). Prosesnya sekitar 2–3 menit, jangan tutup halaman.</p>
-    <p class="hint">Demi keamanan foto anak, kartu <b>mandi</b> dan <b>ke toilet</b> pada gaya foto realistis tetap memakai foto benda (gayung, sabun, kloset), tanpa sosok anak.</p>
+    <p class="hint">Dari satu foto wajah, kami buatkan <b>semua kartu kegiatan</b> dengan wajah si kecil, mengikuti gaya gambar dan kartu ibadah di langkah 1, jadi template apa pun yang dipilih langsung memakai wajahnya. Butuh kode akses dari terapis YAMET (satu kode untuk sekali buat). Prosesnya sekitar 2–3 menit, jangan tutup halaman.</p>
+    <p class="hint">Demi keamanan foto anak, kartu <b>mandi</b> dan <b>ke toilet</b> pada gaya foto realistis tetap memakai foto benda (gayung, sabun, kloset), tanpa sosok anak. <b>Kartu ibadah</b> juga tetap memakai gambar bawaan supaya gerakan dan pakaian ibadahnya benar.</p>
+    <p class="hint">Kalau si kecil berjilbab, periksa kartunya. Bila ada rambut yang terlihat, ketuk kartu itu lalu pilih "Pakai gambar bawaan".</p>
     <label for="kode">Kode akses</label>
     <input id="kode" type="password" autocomplete="off" placeholder="Contoh: JDW-XXXXX">
     <label for="foto-wajah">Foto wajah si kecil</label>
@@ -176,8 +183,12 @@ footer a{color:var(--green)}
     sarapan: 'Sarapan', berangkat: 'Berangkat', sekolah: 'Sekolah', terapi: 'Terapi', makan_siang: 'Makan siang',
     tidur_siang: 'Tidur siang', main: 'Bermain', belajar: 'Mewarnai / belajar', salat: 'Salat & berdoa', mengaji: 'Mengaji',
     makan_malam: 'Makan malam', beres_mainan: 'Beres-beres mainan', baju_tidur: 'Pakai baju tidur', cuci_kaki: 'Cuci kaki',
-    minum_air: 'Minum air putih', dongeng: 'Dengar dongeng', tidur: 'Tidur malam'
+    minum_air: 'Minum air putih', dongeng: 'Dengar dongeng', tidur: 'Tidur malam',
+    doa_kristen: 'Berdoa', gereja: 'Sekolah Minggu', doa_buddha: 'Berdoa', vihara: 'Sekolah Minggu'
   };
+  // kartu ibadah per agama; urutannya berpasangan (doa harian, lalu kegiatan rohani)
+  const IBADAH = { islam: ['salat', 'mengaji'], kristen: ['doa_kristen', 'gereja'], buddha: ['doa_buddha', 'vihara'] };
+  const IBADAH_SEMUA = Object.values(IBADAH).flat();
   const T = (list) => list.map(([time, key, label]) => ({ time, key, label: label || ACTS[key] }));
   const TEMPLATES = {
     sekolah: { name: 'Hari sekolah', rows: T([['05:30','bangun'],['05:40','toilet'],['05:50','mandi'],['06:05','pakai_baju'],['06:15','sarapan'],['06:35','sikat_gigi'],['06:45','berangkat','Berangkat sekolah'],['07:00','sekolah'],['12:30','makan_siang'],['13:30','tidur_siang'],['15:30','main'],['16:30','mandi','Mandi sore'],['18:00','salat'],['18:30','makan_malam'],['19:15','belajar'],['19:45','beres_mainan'],['20:00','baju_tidur'],['20:10','sikat_gigi'],['20:20','dongeng'],['20:30','tidur']]) },
@@ -187,17 +198,30 @@ footer a{color:var(--green)}
     kosong: { name: 'Mulai dari kosong', rows: [] }
   };
 
-  const state = { name: '', gender: 'L', template: 'sekolah', rows: [], boardPhoto: null, ai: {}, style: 'real' };
+  const state = { name: '', gender: 'L', template: 'sekolah', rows: [], boardPhoto: null, ai: {}, style: 'real', agama: 'islam' };
   const $ = (s) => document.querySelector(s);
   const store = {
     get() { try { return JSON.parse(localStorage.getItem('yamet-jadwal') || 'null'); } catch (e) { return null; } },
-    set() { try { localStorage.setItem('yamet-jadwal', JSON.stringify({ name: state.name, gender: state.gender, style: state.style, template: state.template, rows: state.rows.map(r => ({ time: r.time, key: r.key, label: r.label })) })); } catch (e) { /* tidak apa-apa */ } }
+    set() { try { localStorage.setItem('yamet-jadwal', JSON.stringify({ name: state.name, gender: state.gender, style: state.style, agama: state.agama, template: state.template, rows: state.rows.map(r => ({ time: r.time, key: r.key, label: r.label })) })); } catch (e) { /* tidak apa-apa */ } }
   };
   const iconUrl = (key) => (state.style === 'kartun' ? ICON_BASE : FOTO_BASE) + key + '-' + state.gender + '.jpg';
   const aiFor = (r) => (!r.plain && state.ai[r.key]) || null;
   const imgFor = (r) => r.own || aiFor(r) || iconUrl(r.key);
   const tagFor = (r) => r.own ? 'Foto' : (aiFor(r) ? 'AI' : '');
   const fmtTime = (t) => (t || '').replace(':', '.');
+  const actsTampil = () => Object.keys(ACTS).filter(k => !IBADAH_SEMUA.includes(k) || IBADAH[state.agama].includes(k));
+  function pakaiAgama(agama) {
+    state.rows.forEach(r => {
+      Object.entries(IBADAH).forEach(([ag, list]) => {
+        const i = list.indexOf(r.key);
+        if (i < 0 || ag === agama) return;
+        const baru = IBADAH[agama][i];
+        if (r.label === ACTS[r.key]) r.label = ACTS[baru];
+        r.key = baru; delete r.plain;
+      });
+    });
+    state.agama = agama;
+  }
 
   function render() {
     const ol = $('#rows');
@@ -243,7 +267,7 @@ footer a{color:var(--green)}
       b.setAttribute('aria-pressed', String(k === state.template));
       b.addEventListener('click', () => {
         if (state.rows.length && !confirm('Ganti ke template "' + t.name + '"? Daftar kegiatan sekarang akan diganti.')) return;
-        state.template = k; state.rows = t.rows.map(r => Object.assign({}, r)); store.set(); renderTemplates(); render();
+        state.template = k; state.rows = t.rows.map(r => Object.assign({}, r)); pakaiAgama(state.agama); store.set(); renderTemplates(); render();
       });
       box.appendChild(b);
     });
@@ -251,7 +275,8 @@ footer a{color:var(--green)}
   function renderAddGrid() {
     const g = $('#add-grid');
     g.innerHTML = '';
-    Object.entries(ACTS).forEach(([k, label]) => {
+    actsTampil().forEach(k => {
+      const label = ACTS[k];
       const b = document.createElement('button');
       b.type = 'button';
       b.innerHTML = '<img alt="" loading="lazy" src="' + (state.ai[k] || iconUrl(k)) + '">' + label;
@@ -367,6 +392,11 @@ footer a{color:var(--green)}
     state.boardPhoto = null; const a = $('#avatar'); a.style.backgroundImage = ''; a.classList.remove('has'); $('#btn-hapus-foto').hidden = true;
   });
 
+  document.querySelectorAll('#agama button').forEach(b => b.addEventListener('click', () => {
+    pakaiAgama(b.dataset.a);
+    document.querySelectorAll('#agama button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    store.set(); render();
+  }));
   document.querySelectorAll('#gaya button').forEach(b => b.addEventListener('click', () => {
     state.style = b.dataset.s;
     document.querySelectorAll('#gaya button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
@@ -379,7 +409,7 @@ footer a{color:var(--green)}
     const code = $('#kode').value.trim();
     const f = $('#foto-wajah').files[0];
     const FOTO_BENDA = ['mandi', 'toilet']; // gaya realistis: foto benda tetap, tanpa anak
-    const keys = Object.keys(ACTS).filter(k => state.style !== 'real' || !FOTO_BENDA.includes(k));
+    const keys = actsTampil().filter(k => !IBADAH_SEMUA.includes(k) && (state.style !== 'real' || !FOTO_BENDA.includes(k)));
     if (!code) { st.className = 'status err'; st.textContent = 'Isi kode akses dulu.'; return; }
     if (!f) { st.className = 'status err'; st.textContent = 'Pilih foto wajah si kecil.'; return; }
     if (!$('#setuju').checked) { st.className = 'status err'; st.textContent = 'Centang persetujuan orang tua/wali dulu.'; return; }
@@ -395,7 +425,7 @@ footer a{color:var(--green)}
       const n = Object.keys(data.cards || {}).length;
       st.className = 'status ok';
       st.textContent = n + ' kartu dengan wajah si kecil sudah dipasang di semua template.' +
-        (state.style === 'real' ? ' Mandi dan ke toilet tetap memakai foto benda.' : '') +
+        (state.style === 'real' ? ' Kartu ibadah, mandi, dan ke toilet tetap memakai gambar bawaan.' : ' Kartu ibadah tetap memakai gambar bawaan.') +
         (data.failed && data.failed.length ? ' ' + data.failed.length + ' kartu gagal dan tetap memakai gambar bawaan.' + (data.bisaUlang ? ' Kode belum terpakai, jadi boleh dicoba sekali lagi.' : '') : '') +
         ' Kartu yang kurang pas bisa diketuk lalu pilih "Pakai gambar bawaan". Unduh PDF sebelum menutup halaman, karena foto tidak kami simpan.';
       $('#foto-wajah').value = '';
@@ -479,10 +509,11 @@ footer a{color:var(--green)}
   // mulai
   const saved = store.get();
   if (saved && Array.isArray(saved.rows)) {
-    Object.assign(state, { name: saved.name || '', gender: saved.gender === 'P' ? 'P' : 'L', style: saved.style === 'kartun' ? 'kartun' : 'real', template: TEMPLATES[saved.template] ? saved.template : 'sekolah', rows: saved.rows.filter(r => ACTS[r.key]) });
+    Object.assign(state, { name: saved.name || '', gender: saved.gender === 'P' ? 'P' : 'L', style: saved.style === 'kartun' ? 'kartun' : 'real', agama: IBADAH[saved.agama] ? saved.agama : 'islam', template: TEMPLATES[saved.template] ? saved.template : 'sekolah', rows: saved.rows.filter(r => ACTS[r.key]) });
     $('#nama').value = state.name;
     document.querySelectorAll('#gender button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.g === state.gender)));
     document.querySelectorAll('#gaya button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.s === state.style)));
+    document.querySelectorAll('#agama button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.a === state.agama)));
   } else {
     state.rows = TEMPLATES.sekolah.rows.map(r => Object.assign({}, r));
   }

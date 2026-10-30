@@ -28,9 +28,14 @@ Reels: MP4 H.264 + AAC, 9:16, 3 detik–15 menit.
   di `https://n8n-hc8x.srv2014501.hstgr.cloud/webhook/jadwal`.
 - `jadwal/foto/`: gambar bawaan gaya foto realistis (`<kegiatan>-L.jpg` anak laki-laki, `-P.jpg` perempuan),
   dibuat dengan Higgsfield GPT Image 2.5 (varian Sunburst) dari dua foto acuan anak buatan AI, jadi tiap
-  kartu menampilkan anak yang sama. Mandi dan ke toilet hanya berisi benda.
-- `jadwal/ikon/`: gambar bawaan gaya kartun (pola nama sama), dibuat dengan MiniMax image-01.
+  kartu menampilkan anak yang sama. Anak digambarkan sedang fokus ke kegiatannya (tidak berpose ke kamera).
+  Mandi dan ke toilet hanya berisi benda. Jilbab/mukena anak perempuan menutup semua rambut.
+- `jadwal/ikon/`: gambar bawaan gaya kartun (pola nama sama), dibuat dengan MiniMax image-01;
+  beberapa diperbaiki dengan GPT Image 2.5 (salat & mengaji anak perempuan, berdoa Buddha).
+- Kartu ibadah per agama: Islam (`salat`, `mengaji`), Kristen (`doa_kristen`, `gereja`),
+  Buddha (`doa_buddha`, `vihara`). Pilihan agama di halaman menukar kartu ini di template.
 - Kartu bergambar wajah anak dibuat lewat `POST /webhook/jadwal/buat` (butuh kode akses sekali pakai):
   semua kegiatan sekaligus dengan MiniMax image-01, mengikuti gaya yang dipilih (foto realistis atau kartun).
   Pada gaya realistis, kartu mandi dan ke toilet tetap memakai gambar bawaan berisi benda, tanpa anak.
+  Kartu ibadah selalu memakai gambar bawaan (MiniMax belum bisa menjamin gerakan ibadah dan jilbab yang benar).
   Foto anak tidak disimpan di repo ini maupun di riwayat n8n.

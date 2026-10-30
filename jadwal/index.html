@@ -44,6 +44,13 @@ input:focus{outline:3px solid rgba(23,97,74,.25);border-color:var(--green)}
 .row img{width:64px;height:64px;border-radius:10px;object-fit:cover;background:#fff;display:block}
 .thumb{position:relative;border:0;padding:0;background:none;cursor:pointer;border-radius:10px}
 .thumb .tag{position:absolute;left:3px;bottom:3px;font-size:10px;font-weight:700;background:rgba(255,255,255,.9);color:var(--green);border-radius:6px;padding:0 5px}
+.thumb .ortu-mini{position:absolute;right:-4px;bottom:-4px;display:flex;flex-direction:row-reverse}
+.row .ortu-mini img{width:24px;height:24px;border-radius:50%;border:2px solid #fff;object-fit:cover;background:#fff}
+.row .ortu-mini img+img{margin-right:-7px}
+.ortu-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ortu{display:flex;gap:10px;align-items:center;min-width:0}
+.avatar.kecil{width:52px;height:52px}
+.btn.kecil{padding:7px 12px;font-size:14px;margin-top:4px}
 .fields{display:grid;grid-template-columns:96px 1fr;gap:6px;min-width:0}
 .fields input{padding:8px 9px;font-size:15px}
 .tools{display:flex;flex-direction:column;gap:4px}
@@ -107,6 +114,26 @@ footer a{color:var(--green)}
       <button type="button" class="btn ghost" id="btn-foto-papan">Pilih foto</button>
       <button type="button" class="btn ghost" id="btn-hapus-foto" hidden>Hapus</button>
       <div class="hint" style="margin:6px 0 0">Foto ini hanya diproses di HP Mama Papa, tidak dikirim ke mana pun.</div>
+    </div>
+  </div>
+  <label>Foto ayah &amp; ibu (opsional)</label>
+  <p class="hint" style="margin:0 0 10px">Tampil di judul papan dan sebagai foto bulat kecil di kartu kegiatan bersama orang tua (bermain/belajar bersama orang tua, dengar dongeng, jalan pagi), supaya si kecil tahu sedang bersama siapa. Juga hanya diproses di HP ini.</p>
+  <div class="ortu-row">
+    <div class="ortu">
+      <div class="avatar kecil" id="avatar-ayah" aria-hidden="true"></div>
+      <div><b>Ayah</b><br>
+        <input id="foto-ayah" type="file" accept="image/*" class="sr">
+        <button type="button" class="btn ghost kecil" data-pilih="ayah">Pilih foto</button>
+        <button type="button" class="btn ghost kecil" data-hapus="ayah" hidden>Hapus</button>
+      </div>
+    </div>
+    <div class="ortu">
+      <div class="avatar kecil" id="avatar-ibu" aria-hidden="true"></div>
+      <div><b>Ibu</b><br>
+        <input id="foto-ibu" type="file" accept="image/*" class="sr">
+        <button type="button" class="btn ghost kecil" data-pilih="ibu">Pilih foto</button>
+        <button type="button" class="btn ghost kecil" data-hapus="ibu" hidden>Hapus</button>
+      </div>
     </div>
   </div>
 </section>
@@ -188,10 +215,11 @@ footer a{color:var(--green)}
     terapi_bt: 'Terapi BT', terapi_pss: 'Preschool Skills', terapi_wicara: 'Terapi Wicara',
     terapi_si: 'Sensori Integrasi', terapi_fisio: 'Fisioterapi', toilet_training: 'Toilet training',
     snack_time: 'Snack time', cuci_tangan: 'Cuci tangan', belajar_ortu: 'Belajar bersama orang tua',
-    motorik_kasar: 'Bermain motorik kasar', jalan_pagi: 'Jalan pagi'
+    motorik_kasar: 'Bermain motorik kasar', jalan_pagi: 'Jalan pagi', main_ortu: 'Bermain bersama orang tua'
   };
-  // satu gambar untuk beberapa kegiatan: BT, PSS, dan terapi wicara sama-sama di ruang kelas terapi
-  const GAMBAR = { terapi_bt: 'terapi_kelas', terapi_pss: 'terapi_kelas', terapi_wicara: 'terapi_kelas' };
+  // satu gambar untuk beberapa kegiatan: BT, PSS, dan terapi wicara sama-sama di ruang kelas terapi;
+  // "bermain bersama orang tua" memakai gambar bermain, ditambah foto ayah/ibu bila ada
+  const GAMBAR = { terapi_bt: 'terapi_kelas', terapi_pss: 'terapi_kelas', terapi_wicara: 'terapi_kelas', main_ortu: 'main' };
   const SELALU_KARTUN = ['toilet_training']; // toilet training selalu memakai gambar kartun
   const TANPA_AI = ['toilet_training'];
   // kartu ibadah per agama; urutannya berpasangan (doa harian, lalu kegiatan rohani)
@@ -201,21 +229,26 @@ footer a{color:var(--green)}
   const TEMPLATES = {
     sekolah: { name: 'Hari sekolah', rows: T([['05:30','bangun'],['05:40','toilet'],['05:50','mandi'],['06:05','pakai_baju'],['06:15','sarapan'],['06:35','sikat_gigi'],['06:45','berangkat','Berangkat sekolah'],['07:00','sekolah'],['12:30','makan_siang'],['13:30','tidur_siang'],['15:30','main'],['16:30','mandi','Mandi sore'],['18:00','salat'],['18:30','makan_malam'],['19:15','belajar'],['19:45','beres_mainan'],['20:00','baju_tidur'],['20:10','sikat_gigi'],['20:20','dongeng'],['20:30','tidur']]) },
     terapi: { name: 'Hari terapi', rows: T([['06:00','bangun'],['06:05','toilet_training'],['06:10','mandi','Mandi pagi'],['06:25','pakai_baju'],['06:30','sarapan'],['07:00','berangkat','Berangkat ke YAMET'],['08:00','terapi_bt','Terapi di YAMET Dempo'],['10:00','cuci_tangan'],['10:05','snack_time'],['11:00','tidur_siang'],['12:30','makan_siang'],['13:00','belajar_ortu'],['15:00','snack_time'],['15:15','motorik_kasar'],['17:30','mandi','Mandi sore'],['18:00','makan_malam'],['18:30','belajar_ortu'],['20:00','sikat_gigi'],['20:10','tidur']]) },
-    libur_terapi: { name: 'Libur terapi', rows: T([['06:00','bangun'],['06:05','toilet_training'],['06:10','mandi','Mandi pagi'],['06:25','pakai_baju'],['06:30','sarapan'],['07:00','jalan_pagi'],['07:30','main','Bermain bersama orang tua'],['10:30','cuci_tangan'],['10:35','snack_time'],['11:00','tidur_siang'],['12:30','makan_siang'],['13:00','belajar_ortu'],['15:00','snack_time'],['15:15','motorik_kasar'],['17:30','mandi','Mandi sore'],['18:00','makan_malam'],['18:30','belajar_ortu'],['20:00','sikat_gigi'],['20:10','tidur']]) },
+    libur_terapi: { name: 'Libur terapi', rows: T([['06:00','bangun'],['06:05','toilet_training'],['06:10','mandi','Mandi pagi'],['06:25','pakai_baju'],['06:30','sarapan'],['07:00','jalan_pagi'],['07:30','main_ortu'],['10:30','cuci_tangan'],['10:35','snack_time'],['11:00','tidur_siang'],['12:30','makan_siang'],['13:00','belajar_ortu'],['15:00','snack_time'],['15:15','motorik_kasar'],['17:30','mandi','Mandi sore'],['18:00','makan_malam'],['18:30','belajar_ortu'],['20:00','sikat_gigi'],['20:10','tidur']]) },
     libur: { name: 'Akhir pekan', rows: T([['06:30','bangun'],['06:40','toilet'],['07:00','mandi'],['07:30','sarapan'],['08:00','jalan_pagi'],['08:30','main'],['10:30','beres_mainan'],['12:00','makan_siang'],['13:00','tidur_siang'],['15:30','main','Main di luar'],['16:30','mandi','Mandi sore'],['18:30','makan_malam'],['19:45','sikat_gigi'],['20:00','dongeng'],['20:30','tidur']]) },
     malam: { name: 'Ritual malam', rows: T([['19:30','baju_tidur'],['19:40','cuci_kaki'],['19:45','sikat_gigi'],['19:55','minum_air'],['20:00','dongeng'],['20:15','tidur']]) },
     kosong: { name: 'Mulai dari kosong', rows: [] }
   };
 
-  const state = { name: '', gender: 'L', template: 'sekolah', rows: [], boardPhoto: null, ai: {}, style: 'real', agama: 'islam' };
+  const state = { name: '', gender: 'L', template: 'sekolah', rows: [], boardPhoto: null, ortu: { ayah: null, ibu: null }, ai: {}, style: 'real', agama: 'islam' };
   const $ = (s) => document.querySelector(s);
   const store = {
     get() { try { return JSON.parse(localStorage.getItem('yamet-jadwal') || 'null'); } catch (e) { return null; } },
     set() { try { localStorage.setItem('yamet-jadwal', JSON.stringify({ name: state.name, gender: state.gender, style: state.style, agama: state.agama, template: state.template, rows: state.rows.map(r => ({ time: r.time, key: r.key, label: r.label })) })); } catch (e) { /* tidak apa-apa */ } }
   };
-  // kunci gambar: dongeng & belajar bersama orang tua memakai versi ayah untuk selain Islam; beberapa terapi berbagi satu gambar
-  const AYAH = { dongeng: 'dongeng_ayah', belajar_ortu: 'belajar_ortu_ayah' }; // selain Islam: ayah yang menemani
-  const imgKey = (k) => (AYAH[k] && state.agama !== 'islam') ? AYAH[k] : (GAMBAR[k] || k);
+  // kunci gambar: dongeng & belajar bersama orang tua memakai versi ayah untuk selain Islam (atau bila hanya foto ayah
+  // yang diunggah; sebaliknya versi ibu bila hanya foto ibu); beberapa terapi berbagi satu gambar
+  const AYAH = { dongeng: 'dongeng_ayah', belajar_ortu: 'belajar_ortu_ayah' };
+  const pakaiAyah = () => (state.ortu.ayah && !state.ortu.ibu) ? true : ((state.ortu.ibu && !state.ortu.ayah) ? false : state.agama !== 'islam');
+  const imgKey = (k) => (AYAH[k] && pakaiAyah()) ? AYAH[k] : (GAMBAR[k] || k);
+  // kartu yang dilakukan bersama orang tua: diberi foto bulat ayah/ibu (yang tergambar di kartu paling depan)
+  const ORTU_KARTU = ['belajar_ortu', 'dongeng', 'jalan_pagi', 'main_ortu'];
+  const ortuFor = (r) => (r.own || !ORTU_KARTU.includes(r.key)) ? [] : (pakaiAyah() ? ['ayah', 'ibu'] : ['ibu', 'ayah']).filter(o => state.ortu[o]).map(o => state.ortu[o]);
   const iconUrl = (key) => (state.style === 'kartun' || SELALU_KARTUN.includes(key) ? ICON_BASE : FOTO_BASE) + imgKey(key) + '-' + state.gender + '.jpg';
   const aiFor = (r) => (!r.plain && state.ai[imgKey(r.key)]) || null;
   const imgFor = (r) => r.own || aiFor(r) || iconUrl(r.key);
@@ -247,9 +280,10 @@ footer a{color:var(--green)}
     state.rows.forEach((r, i) => {
       const li = document.createElement('li');
       li.className = 'row';
-      const tag = tagFor(r);
+      const tag = tagFor(r), ortu = ortuFor(r);
       li.innerHTML =
-        '<button type="button" class="thumb" aria-label="Ganti gambar ' + escapeHtml(r.label) + '"><img alt="" src="' + imgFor(r) + '">' + (tag ? '<span class="tag">' + tag + '</span>' : '') + '</button>' +
+        '<button type="button" class="thumb" aria-label="Ganti gambar ' + escapeHtml(r.label) + '"><img alt="" src="' + imgFor(r) + '">' + (tag ? '<span class="tag">' + tag + '</span>' : '') +
+        (ortu.length ? '<span class="ortu-mini">' + ortu.map(u => '<img alt="" src="' + u + '">').join('') + '</span>' : '') + '</button>' +
         '<div class="fields"><input type="time" aria-label="Jam" value="' + r.time + '"><input type="text" aria-label="Nama kegiatan" maxlength="28" value="' + escapeHtml(r.label) + '"></div>' +
         '<div class="tools"><button type="button" class="icon-btn" data-act="up" aria-label="Naikkan">▲</button><button type="button" class="icon-btn" data-act="down" aria-label="Turunkan">▼</button><button type="button" class="icon-btn del" data-act="del" aria-label="Hapus">✕</button></div>';
       const im = li.querySelector('img');
@@ -361,6 +395,27 @@ footer a{color:var(--green)}
     x.drawImage(im, (im.naturalWidth - s) / 2, (im.naturalHeight - s) / 2, s, s, 0, 0, size, size);
     return c.toDataURL('image/png');
   }
+  // tempel foto bulat ayah/ibu di pojok kanan bawah gambar kartu (yang pertama paling kanan dan paling depan)
+  async function denganOrtu(base, list) {
+    if (!list.length) return base;
+    try {
+      const S = 512, D = 136, ring = 7, m = 12, geser = D - 24;
+      const c = document.createElement('canvas'); c.width = c.height = S;
+      const x = c.getContext('2d');
+      x.drawImage(await loadImg(base), 0, 0, S, S);
+      const fotos = await Promise.all(list.map(loadImg));
+      for (let i = fotos.length - 1; i >= 0; i--) {
+        const p = fotos[i], cx = S - m - ring - D / 2 - i * geser, cy = S - m - ring - D / 2;
+        x.save();
+        x.beginPath(); x.arc(cx, cy, D / 2 + ring, 0, Math.PI * 2); x.fillStyle = '#fff'; x.fill();
+        x.beginPath(); x.arc(cx, cy, D / 2, 0, Math.PI * 2); x.clip();
+        const s = Math.min(p.naturalWidth, p.naturalHeight);
+        x.drawImage(p, (p.naturalWidth - s) / 2, (p.naturalHeight - s) / 2, s, s, cx - D / 2, cy - D / 2, D, D);
+        x.restore();
+      }
+      return c.toDataURL('image/jpeg', 0.9);
+    } catch (e) { return base; }
+  }
   const cache = {};
   function placeholder(label) {
     const c = document.createElement('canvas'); c.width = c.height = 512;
@@ -402,6 +457,22 @@ footer a{color:var(--green)}
   });
   $('#btn-hapus-foto').addEventListener('click', () => {
     state.boardPhoto = null; const a = $('#avatar'); a.style.backgroundImage = ''; a.classList.remove('has'); $('#btn-hapus-foto').hidden = true;
+  });
+  // foto ayah & ibu: hanya disimpan di memori halaman, tidak dikirim ke mana pun
+  const tampilOrtu = (o) => {
+    const a = $('#avatar-' + o), u = state.ortu[o];
+    a.style.backgroundImage = u ? 'url(' + u + ')' : ''; a.classList.toggle('has', !!u);
+    document.querySelector('[data-hapus="' + o + '"]').hidden = !u;
+    render();
+  };
+  ['ayah', 'ibu'].forEach(o => {
+    document.querySelector('[data-pilih="' + o + '"]').addEventListener('click', () => $('#foto-' + o).click());
+    $('#foto-' + o).addEventListener('change', async e => {
+      const f = e.target.files[0]; e.target.value = '';
+      if (!f) return;
+      state.ortu[o] = await squareImage(f, 480); tampilOrtu(o);
+    });
+    document.querySelector('[data-hapus="' + o + '"]').addEventListener('click', () => { state.ortu[o] = null; tampilOrtu(o); });
   });
 
   document.querySelectorAll('#agama button').forEach(b => b.addEventListener('click', () => {
@@ -462,12 +533,13 @@ footer a{color:var(--green)}
     const doc = new jsPDF({ unit: 'mm', format: 'a4' });
     const GREEN = [23, 97, 74], YEL = [255, 216, 74], SOFT = [255, 246, 214], INK = [30, 42, 36], LINE = [240, 197, 49];
     const rows = state.rows.slice();
-    const imgs = await Promise.all(rows.map(r => toDataUrl(imgFor(r), r.label)));
+    const imgs = await Promise.all(rows.map(async r => denganOrtu(await toDataUrl(imgFor(r), r.label), ortuFor(r))));
     const title = 'Jadwal ' + (state.name || 'Harianku');
     const footer = () => { doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(120, 120, 120); doc.text('Dibuat dengan generator Jadwal Bergambar YAMET Palembang · @yametpalembang', 105, 291, { align: 'center' }); };
 
     // papan jadwal: satu halaman per bagian hari (pagi, siang, malam) supaya gambarnya bisa besar
     const photo = state.boardPhoto ? await circleImage(state.boardPhoto, 360) : null;
+    const ortuFoto = await Promise.all(['ayah', 'ibu'].filter(o => state.ortu[o]).map(o => circleImage(state.ortu[o], 300)));
     const tplName = (TEMPLATES[state.template] || {}).name || 'Jadwal harian';
     const NAMA_BAGIAN = ['Pagi', 'Siang', 'Malam'];
     const lh = (pt) => pt * 0.3528 * 1.2; // tinggi satu baris teks (mm) untuk ukuran huruf pt
@@ -493,8 +565,11 @@ footer a{color:var(--green)}
     }
     function kepala(k, items, lanjut) {
       doc.setFillColor(...GREEN); doc.rect(0, 0, 210, 30, 'F');
-      let tx = 12;
-      if (photo) { doc.addImage(photo, 'PNG', 10, 4, 22, 22); tx = 38; }
+      // foto si kecil, lalu foto ayah & ibu (lebih kecil), masing-masing dengan lingkar putih
+      let px = 10;
+      if (photo) { doc.setFillColor(255, 255, 255); doc.circle(px + 11, 15, 11.7, 'F'); doc.addImage(photo, 'PNG', px, 4, 22, 22); px += 25; }
+      ortuFoto.forEach(p => { doc.setFillColor(255, 255, 255); doc.circle(px + 7.5, 15, 7.9, 'F'); doc.addImage(p, 'PNG', px + 0.5, 8, 14, 14); px += 16.5; });
+      const tx = px === 10 ? 12 : px + 3;
       const jam = items.map(it => it.r.time).filter(t => menit(t) !== null).sort((a, b) => menit(a) - menit(b));
       const rentang = jam.length ? fmtTime(jam[0]) + (jam.length > 1 ? ' - ' + fmtTime(jam[jam.length - 1]) : '') : '';
       const nama = NAMA_BAGIAN[k] + lanjut, right = 198;

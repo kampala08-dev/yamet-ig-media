@@ -290,6 +290,16 @@ footer a{color:var(--green)}
     c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
     return c.toDataURL('image/jpeg', 0.88);
   }
+  async function cropCard(dataUrl) {
+    // buang 6% tepi (tempat model kadang menaruh tanda kecil), lalu kecilkan ke 512px
+    try {
+      const im = await loadImg(dataUrl);
+      const m = Math.round(im.naturalWidth * 0.06), s = im.naturalWidth - 2 * m;
+      const c = document.createElement('canvas'); c.width = c.height = 512;
+      c.getContext('2d').drawImage(im, m, m, s, s, 0, 0, 512, 512);
+      return c.toDataURL('image/jpeg', 0.9);
+    } catch (e) { return dataUrl; }
+  }
   async function circleImage(dataUrl, size) {
     const im = await loadImg(dataUrl);
     const c = document.createElement('canvas'); c.width = c.height = size;
@@ -359,7 +369,7 @@ footer a{color:var(--green)}
       const resp = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code, gender: state.gender, photo, keys: keys.slice(0, 12) }) });
       const data = await resp.json().catch(() => ({}));
       if (!resp.ok || !data.ok) throw new Error(data.error || ('Gagal (' + resp.status + ')'));
-      Object.assign(state.ai, data.cards || {});
+      for (const [k, v] of Object.entries(data.cards || {})) state.ai[k] = await cropCard(v);
       const n = Object.keys(data.cards || {}).length;
       st.className = 'status ok';
       st.textContent = n + ' kartu jadi.' + (keys.length > 12 ? ' (Maksimal 12 kegiatan per sekali buat; sisanya tetap pakai ikon.)' : '') + (data.failed && data.failed.length ? ' Ada ' + data.failed.length + ' kartu yang gagal, tetap pakai ikon.' : '');

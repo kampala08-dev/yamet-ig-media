@@ -117,8 +117,14 @@ footer a{color:var(--green)}
   <h2 id="h-ai"><span class="num">4</span>Kartu bergambar si kecil</h2>
   <p class="hint">Opsional. Gambar ikon di atas sudah bisa langsung dipakai.</p>
   <details class="ai">
-    <summary>Khusus pasien YAMET: ubah gambar jadi mirip si kecil</summary>
-    <p class="hint">Dari satu foto wajah, kami gambar ulang tiap kegiatan dengan gaya kartun yang mirip si kecil. Butuh kode akses dari terapis YAMET. <b>Satu kode hanya bisa dipakai sekali</b> (maksimal 12 kegiatan), jadi susun dulu daftar kegiatannya sampai pas. Prosesnya sekitar 30–60 detik.</p>
+    <summary>Khusus pasien YAMET: semua gambar pakai wajah si kecil</summary>
+    <p class="hint">Dari satu foto wajah, kami buatkan <b>semua 22 kartu kegiatan</b> dengan wajah si kecil, jadi template apa pun yang dipilih langsung memakai wajahnya. Butuh kode akses dari terapis YAMET (satu kode untuk sekali buat). Prosesnya sekitar 1–2 menit, jangan tutup halaman.</p>
+    <label>Gaya gambar</label>
+    <div class="seg" id="gaya">
+      <button type="button" data-s="real" aria-pressed="true">Foto realistis</button>
+      <button type="button" data-s="kartun" aria-pressed="false">Kartun</button>
+    </div>
+    <p class="hint" style="margin-top:6px">Demi keamanan foto anak, kartu <b>mandi</b> dan <b>ke toilet</b> pada gaya foto realistis hanya menampilkan benda (gayung, sabun, kloset), tanpa sosok anak.</p>
     <label for="kode">Kode akses</label>
     <input id="kode" type="password" autocomplete="off" placeholder="Contoh: JDW-XXXXX">
     <label for="foto-wajah">Foto wajah si kecil</label>
@@ -179,7 +185,7 @@ footer a{color:var(--green)}
     kosong: { name: 'Mulai dari kosong', rows: [] }
   };
 
-  const state = { name: '', gender: 'L', template: 'sekolah', rows: [], boardPhoto: null, ai: {} };
+  const state = { name: '', gender: 'L', template: 'sekolah', rows: [], boardPhoto: null, ai: {}, style: 'real' };
   const $ = (s) => document.querySelector(s);
   const store = {
     get() { try { return JSON.parse(localStorage.getItem('yamet-jadwal') || 'null'); } catch (e) { return null; } },
@@ -353,26 +359,29 @@ footer a{color:var(--green)}
   });
 
   // AI
+  document.querySelectorAll('#gaya button').forEach(b => b.addEventListener('click', () => {
+    state.style = b.dataset.s;
+    document.querySelectorAll('#gaya button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  }));
   $('#btn-ai').addEventListener('click', async () => {
     const st = $('#ai-status'); st.className = 'status';
     const code = $('#kode').value.trim();
     const f = $('#foto-wajah').files[0];
-    const keys = [...new Set(state.rows.map(r => r.key))];
+    const keys = Object.keys(ACTS);
     if (!code) { st.className = 'status err'; st.textContent = 'Isi kode akses dulu.'; return; }
     if (!f) { st.className = 'status err'; st.textContent = 'Pilih foto wajah si kecil.'; return; }
     if (!$('#setuju').checked) { st.className = 'status err'; st.textContent = 'Centang persetujuan orang tua/wali dulu.'; return; }
-    if (!keys.length) { st.className = 'status err'; st.textContent = 'Daftar kegiatan masih kosong.'; return; }
     const btn = $('#btn-ai'); btn.disabled = true;
-    let sec = 0; const timer = setInterval(() => { sec++; st.textContent = 'Sedang menggambar ' + Math.min(keys.length, 12) + ' kartu… ' + sec + ' detik'; }, 1000);
+    let sec = 0; const timer = setInterval(() => { sec++; st.textContent = 'Sedang membuat ' + keys.length + ' kartu dengan wajah si kecil… ' + sec + ' detik'; }, 1000);
     try {
       const photo = await scaledImage(f, 768);
-      const resp = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code, gender: state.gender, photo, keys: keys.slice(0, 12) }) });
+      const resp = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code, gender: state.gender, style: state.style, photo, keys }) });
       const data = await resp.json().catch(() => ({}));
       if (!resp.ok || !data.ok) throw new Error(data.error || ('Gagal (' + resp.status + ')'));
       for (const [k, v] of Object.entries(data.cards || {})) state.ai[k] = await cropCard(v);
       const n = Object.keys(data.cards || {}).length;
       st.className = 'status ok';
-      st.textContent = n + ' kartu jadi.' + (keys.length > 12 ? ' (Maksimal 12 kegiatan per sekali buat; sisanya tetap pakai ikon.)' : '') + (data.failed && data.failed.length ? ' Ada ' + data.failed.length + ' kartu yang gagal, tetap pakai ikon.' : '');
+      st.textContent = n + ' kartu jadi dan sudah dipasang di semua template.' + (data.failed && data.failed.length ? ' ' + data.failed.length + ' kartu gagal dan tetap memakai ikon.' : '') + ' Unduh PDF sebelum menutup halaman, karena foto tidak kami simpan.';
       $('#foto-wajah').value = '';
       render();
     } catch (err) {

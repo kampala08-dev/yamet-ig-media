@@ -25,7 +25,9 @@ Reels: MP4 H.264 + AAC, 9:16, 3 detik–15 menit.
 ## Generator jadwal bergambar (`jadwal/`)
 
 - `jadwal/index.html`: halaman generator, disajikan oleh workflow n8n **24 - Jadwal Bergambar**
-  di `https://n8n-hc8x.srv2014501.hstgr.cloud/webhook/jadwal`.
+  di `https://n8n-hc8x.srv2014501.hstgr.cloud/webhook/jadwal`. PDF-nya berisi papan jadwal tiga
+  halaman menurut jam (pagi sebelum 11.00, siang 11.00–17.59, malam mulai 18.00; lebih dari 12
+  kegiatan dalam satu bagian berlanjut ke halaman berikutnya), lalu halaman kartu untuk digunting.
 - `jadwal/foto/`: gambar bawaan gaya foto realistis (`<kegiatan>-L.jpg` anak laki-laki, `-P.jpg` perempuan),
   dibuat dengan Higgsfield GPT Image 2.5 (varian Sunburst) dari dua foto acuan anak buatan AI, jadi tiap
   kartu menampilkan anak yang sama. Anak digambarkan sedang fokus ke kegiatannya (tidak berpose ke kamera).

@@ -145,7 +145,7 @@ footer a{color:var(--green)}
 
 <section aria-labelledby="h-unduh">
   <h2 id="h-unduh"><span class="num">5</span>Unduh &amp; cetak</h2>
-  <p class="hint">PDF A4: halaman pertama papan jadwal dengan kotak centang, halaman berikutnya kartu untuk digunting dan ditempel (pakai perekat/velcro supaya bisa dipindah).</p>
+  <p class="hint">PDF A4: papan jadwal dibagi tiga halaman menurut jam, yaitu <b>pagi</b> (sebelum 11.00), <b>siang</b> (11.00–17.59), dan <b>malam</b> (mulai 18.00), dengan gambar besar dan kotak centang. Halaman berikutnya berisi kartu untuk digunting dan ditempel (pakai perekat/velcro supaya bisa dipindah).</p>
   <button type="button" class="btn full" id="btn-pdf">Unduh PDF jadwal</button>
   <div class="status" id="pdf-status" role="status" aria-live="polite"></div>
 </section>
@@ -466,34 +466,98 @@ footer a{color:var(--green)}
     const title = 'Jadwal ' + (state.name || 'Harianku');
     const footer = () => { doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(120, 120, 120); doc.text('Dibuat dengan generator Jadwal Bergambar YAMET Palembang · @yametpalembang', 105, 291, { align: 'center' }); };
 
-    // halaman papan
-    doc.setFillColor(...GREEN); doc.rect(0, 0, 210, 30, 'F');
-    let tx = 12;
-    if (state.boardPhoto) { const c = await circleImage(state.boardPhoto, 360); doc.addImage(c, 'PNG', 10, 4, 22, 22); tx = 38; }
-    doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.text(title, tx, 16);
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...YEL); doc.text((TEMPLATES[state.template] || {}).name || 'Jadwal harian', tx, 24);
-    const cols = rows.length > 8 ? 2 : 1;
-    const per = Math.ceil(rows.length / cols);
-    const top = 36, bottom = 284, gap = 3, colGap = 6;
-    const rowH = Math.min(34, (bottom - top - (per - 1) * gap) / per);
-    const colW = (190 - (cols - 1) * colGap) / cols;
+    // papan jadwal: satu halaman per bagian hari (pagi, siang, malam) supaya gambarnya bisa besar
+    const photo = state.boardPhoto ? await circleImage(state.boardPhoto, 360) : null;
+    const tplName = (TEMPLATES[state.template] || {}).name || 'Jadwal harian';
+    const NAMA_BAGIAN = ['Pagi', 'Siang', 'Malam'];
+    const lh = (pt) => pt * 0.3528 * 1.2; // tinggi satu baris teks (mm) untuk ukuran huruf pt
+    // menit sejak jam 04.00, supaya kegiatan lewat tengah malam tetap urut di bagian malam
+    const menit = (t) => { const m = /^(\d{1,2}):(\d{2})/.exec(t || ''); return m ? ((+m[1] + 20) % 24) * 60 + +m[2] : null; };
+    const bagianDari = (t) => { const v = menit(t); return v === null ? null : (v < 7 * 60 ? 0 : (v < 14 * 60 ? 1 : 2)); }; // pagi 04.00-10.59, siang 11.00-17.59, malam 18.00-03.59
+    function ikon(k, cx, cy) {
+      const sinar = (ox, oy, r1, r2, sudut) => {
+        doc.setDrawColor(...YEL); doc.setLineWidth(0.7);
+        sudut.forEach(a => { const t = a * Math.PI / 180; doc.line(ox + Math.cos(t) * r1, oy + Math.sin(t) * r1, ox + Math.cos(t) * r2, oy + Math.sin(t) * r2); });
+      };
+      doc.setFillColor(...YEL);
+      if (k === 0) { // matahari terbit
+        doc.circle(cx, cy + 2, 4.2, 'F'); doc.setFillColor(...GREEN); doc.rect(cx - 8, cy + 2, 16, 6, 'F');
+        doc.setDrawColor(...YEL); doc.setLineWidth(0.7); doc.line(cx - 7.5, cy + 2, cx + 7.5, cy + 2);
+        sinar(cx, cy + 2, 5.4, 7.6, [200, 235, 270, 305, 340]);
+      } else if (k === 1) { // matahari siang
+        doc.circle(cx, cy, 3.8, 'F'); sinar(cx, cy, 5, 7.2, [0, 45, 90, 135, 180, 225, 270, 315]);
+      } else { // bulan sabit dan bintang
+        doc.circle(cx, cy, 4.4, 'F'); doc.setFillColor(...GREEN); doc.circle(cx + 2.3, cy - 1.5, 3.9, 'F');
+        doc.setFillColor(...YEL); doc.circle(cx + 5.4, cy - 4.4, 0.8, 'F');
+      }
+    }
+    function kepala(k, items, lanjut) {
+      doc.setFillColor(...GREEN); doc.rect(0, 0, 210, 30, 'F');
+      let tx = 12;
+      if (photo) { doc.addImage(photo, 'PNG', 10, 4, 22, 22); tx = 38; }
+      const jam = items.map(it => it.r.time).filter(t => menit(t) !== null).sort((a, b) => menit(a) - menit(b));
+      const rentang = jam.length ? fmtTime(jam[0]) + (jam.length > 1 ? ' - ' + fmtTime(jam[jam.length - 1]) : '') : '';
+      const nama = NAMA_BAGIAN[k] + lanjut, right = 198;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10); const wJam = rentang ? doc.getTextWidth(rentang) : 0;
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(20); const wBadge = Math.max(doc.getTextWidth(nama), wJam);
+      doc.setTextColor(...YEL); doc.text(nama, right, 15.5, { align: 'right' });
+      if (rentang) { doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(255, 255, 255); doc.text(rentang, right, 23, { align: 'right' }); }
+      ikon(k, right - wBadge - 10, 14);
+      // nama panjang: kecilkan judul supaya tidak menabrak label bagian hari
+      const maxW = right - wBadge - 20 - tx;
+      let fs = 22; doc.setFont('helvetica', 'bold'); doc.setFontSize(fs);
+      while (fs > 13 && doc.getTextWidth(title) > maxW) doc.setFontSize(--fs);
+      doc.setTextColor(255, 255, 255); doc.text(title, tx, 16);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...YEL); doc.text(tplName, tx, 24);
+    }
+    function papan(items, k, lanjut) {
+      kepala(k, items, lanjut);
+      // pilih jumlah kolom yang menghasilkan gambar paling besar
+      const W = 190, H = 244, top = 38, g = 6, pad = 3, n = items.length;
+      let L = null;
+      for (let c = 1; c <= Math.min(4, n); c++) {
+        const r = Math.ceil(n / c);
+        const cellW = (W - (c - 1) * g) / c, cellH = (H - (r - 1) * g) / r;
+        const big = Math.min(24, Math.max(13, cellW * 0.27)), small = Math.min(16, Math.max(10, cellW * 0.19));
+        const textH = 2.5 + lh(big) + 2 * lh(small) + 1.5;
+        const s = Math.min(cellW - 2 * pad, cellH - 2 * pad - textH, 92);
+        if (!L || s > L.s + 0.01) L = { c, r, s, big, small, textH };
+      }
+      const cw = L.s + 2 * pad, ch = L.s + 2 * pad + L.textH;
+      const x0 = 10 + (W - (L.c * cw + (L.c - 1) * g)) / 2;
+      const y0 = top + Math.max(0, (H - (L.r * ch + (L.r - 1) * g)) / 2);
+      const box = Math.min(12, Math.max(7, L.s * 0.15));
+      items.forEach((it, i) => {
+        const x = x0 + (i % L.c) * (cw + g), y = y0 + Math.floor(i / L.c) * (ch + g);
+        doc.setFillColor(...SOFT); doc.setDrawColor(...LINE); doc.setLineWidth(0.3); doc.roundedRect(x, y, cw, ch, 3, 3, 'FD');
+        doc.addImage(it.img, 'JPEG', x + pad, y + pad, L.s, L.s);
+        const ty = y + pad + L.s + 2.5, textW = cw - 2 * pad - box - 3;
+        doc.setTextColor(...GREEN); doc.setFont('helvetica', 'bold'); doc.setFontSize(L.big);
+        doc.text(fmtTime(it.r.time), x + pad, ty + lh(L.big) * 0.78);
+        doc.setTextColor(...INK); doc.setFont('helvetica', 'normal'); doc.setFontSize(L.small);
+        doc.text(doc.splitTextToSize(it.r.label, textW).slice(0, 2), x + pad, ty + lh(L.big) + lh(L.small) * 0.78, { lineHeightFactor: 1.2 });
+        doc.setDrawColor(...GREEN); doc.setLineWidth(0.6);
+        doc.roundedRect(x + cw - pad - box, ty + (L.textH - 4 - box) / 2, box, box, 1.5, 1.5, 'S');
+      });
+    }
+    // kelompokkan menurut jam lalu urutkan; kegiatan tanpa jam ikut tepat sesudah kegiatan sebelumnya
+    const bagian = [[], [], []];
+    let prev = 0, prevV = 0;
     rows.forEach((r, i) => {
-      const c = Math.floor(i / per), k = i % per;
-      const x = 10 + c * (colW + colGap), y = top + k * (rowH + gap);
-      doc.setFillColor(...SOFT); doc.setDrawColor(...LINE); doc.setLineWidth(0.3); doc.roundedRect(x, y, colW, rowH, 3, 3, 'FD');
-      const s = rowH - 4;
-      doc.addImage(imgs[i], 'JPEG', x + 2, y + 2, s, s);
-      const box = Math.min(9, rowH * 0.4);
-      const textX = x + s + 6, textW = colW - s - 10 - box - 4;
-      const big = Math.min(16, rowH * 0.62), small = Math.min(13, rowH * 0.5);
-      doc.setTextColor(...GREEN); doc.setFont('helvetica', 'bold'); doc.setFontSize(big);
-      doc.text(fmtTime(r.time), textX, y + rowH / 2 - 0.5);
-      doc.setTextColor(...INK); doc.setFont('helvetica', 'normal'); doc.setFontSize(small);
-      const lines = doc.splitTextToSize(r.label, textW).slice(0, 2);
-      doc.text(lines, textX, y + rowH / 2 + small * 0.42);
-      doc.setDrawColor(...GREEN); doc.setLineWidth(0.6); doc.roundedRect(x + colW - box - 4, y + (rowH - box) / 2, box, box, 1.5, 1.5, 'S');
+      const v = menit(r.time), k = v === null ? prev : bagianDari(r.time), key = v === null ? prevV : v;
+      prev = k; prevV = key; bagian[k].push({ r, img: imgs[i], key });
     });
-    footer();
+    bagian.forEach(items => items.sort((a, b) => a.key - b.key)); // jam sama: tetap sesuai urutan daftar
+    let halaman = 0;
+    bagian.forEach((items, k) => {
+      if (!items.length) return;
+      const n = Math.ceil(items.length / 12), per = Math.ceil(items.length / n); // lebih dari 12 kegiatan: lanjut ke halaman berikutnya
+      for (let j = 0; j < n; j++) {
+        if (halaman++) doc.addPage();
+        papan(items.slice(j * per, (j + 1) * per), k, n > 1 ? ' ' + (j + 1) + '/' + n : '');
+        footer();
+      }
+    });
 
     // halaman kartu gunting
     const card = 55, lab = 8, cg = 8, rg = 5, cpr = 3, rpp = 4;

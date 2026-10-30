@@ -226,10 +226,13 @@ footer a{color:var(--green)}
 (function () {
   'use strict';
   const ENDPOINT = 'https://n8n-hc8x.srv2014501.hstgr.cloud/webhook/jadwal/buat';
-  const ICON_BASE = 'https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/ikon/'; // kartun
-  const FOTO_BASE = 'https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/foto/'; // foto realistis (Higgsfield GPT Image 2.5)
+  // Di GitHub Pages (jadwal.yametpalembang.io) gambar diambil dari situsnya sendiri; di tempat lain dari repo GitHub.
+  const DI_PAGES = /^jadwal\.yametpalembang\.io$|\.github\.io$/.test(location.hostname);
+  const ASAL = DI_PAGES ? new URL('./', location.href).href : 'https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/';
+  const ICON_BASE = ASAL + 'ikon/'; // kartun
+  const FOTO_BASE = ASAL + 'foto/'; // foto realistis (Higgsfield GPT Image 2.5)
   // papan Kartu AAC Emosi (GPT Image 2.5): laki-laki, perempuan, dan perempuan berjilbab (Islam)
-  const EMOSI_BASE = 'https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/emosi/kartu-aac-emosi-';
+  const EMOSI_BASE = ASAL + 'emosi/kartu-aac-emosi-';
   const ACTS = {
     bangun: 'Bangun tidur', toilet: 'Ke toilet', mandi: 'Mandi', sikat_gigi: 'Sikat gigi', pakai_baju: 'Pakai baju',
     sarapan: 'Sarapan', berangkat: 'Berangkat', sekolah: 'Sekolah', terapi: 'Terapi', makan_siang: 'Makan siang',

@@ -1,0 +1,32 @@
+# Terbitkan generator jadwal bergambar (folder jadwal/) ke GitHub Pages: https://jadwal.yametpalembang.io
+# Hanya folder jadwal/ yang diterbitkan, sehingga halaman generator ada di alamat utama situs.
+name: Terbitkan generator jadwal
+
+on:
+  push:
+    branches: [main]
+    paths: ['jadwal/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  terbit:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: jadwal
+      - id: deployment
+        uses: actions/deploy-pages@v4

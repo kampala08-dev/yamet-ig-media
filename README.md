@@ -26,9 +26,11 @@ Reels: MP4 H.264 + AAC, 9:16, 3 detik–15 menit.
 
 - `jadwal/index.html`: halaman generator, disajikan oleh workflow n8n **24 - Jadwal Bergambar**
   di `https://n8n-hc8x.srv2014501.hstgr.cloud/webhook/jadwal`.
-- `jadwal/ikon/`: ikon kegiatan bergaya YAMET (`<kegiatan>-L.jpg` anak laki-laki, `-P.jpg` perempuan),
-  dibuat dengan MiniMax image-01.
+- `jadwal/foto/`: gambar bawaan gaya foto realistis (`<kegiatan>-L.jpg` anak laki-laki, `-P.jpg` perempuan),
+  dibuat dengan Higgsfield GPT Image 2.5 (varian Sunburst) dari dua foto acuan anak buatan AI, jadi tiap
+  kartu menampilkan anak yang sama. Mandi dan ke toilet hanya berisi benda.
+- `jadwal/ikon/`: gambar bawaan gaya kartun (pola nama sama), dibuat dengan MiniMax image-01.
 - Kartu bergambar wajah anak dibuat lewat `POST /webhook/jadwal/buat` (butuh kode akses sekali pakai):
-  semua kegiatan sekaligus, gaya foto realistis (default) atau kartun. Pada gaya realistis,
-  kartu mandi dan ke toilet memakai foto benda tetap (`ikon/foto-mandi.jpg`, `ikon/foto-toilet.jpg`), tanpa anak.
+  semua kegiatan sekaligus dengan MiniMax image-01, mengikuti gaya yang dipilih (foto realistis atau kartun).
+  Pada gaya realistis, kartu mandi dan ke toilet tetap memakai gambar bawaan berisi benda, tanpa anak.
   Foto anak tidak disimpan di repo ini maupun di riwayat n8n.

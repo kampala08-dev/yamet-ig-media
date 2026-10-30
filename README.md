@@ -34,6 +34,11 @@ Reels: MP4 H.264 + AAC, 9:16, 3 detik–15 menit.
   beberapa diperbaiki dengan GPT Image 2.5 (salat & mengaji anak perempuan, berdoa Buddha).
 - Kartu ibadah per agama: Islam (`salat`, `mengaji`), Kristen (`doa_kristen`, `gereja`),
   Buddha (`doa_buddha`, `vihara`). Pilihan agama di halaman menukar kartu ini di template.
+  Untuk Kristen/Buddha, kartu "Dengar dongeng" memakai gambar `dongeng_ayah` (ayah yang membacakan).
+- Terapi di YAMET Dempo: BT, Preschool Skills, dan Terapi Wicara memakai satu gambar `terapi_kelas`;
+  Sensori Integrasi `terapi_si` (ruang SI YAMET), Fisioterapi `terapi_fisio`. Foto dibuat dengan
+  Higgsfield Seedream 5.0 Flash, kartunnya dengan MiniMax image-01.
+- Toilet training (`toilet_training`) selalu memakai gambar kartun (MiniMax), juga di gaya foto.
 - Kartu bergambar wajah anak dibuat lewat `POST /webhook/jadwal/buat` (butuh kode akses sekali pakai):
   semua kegiatan sekaligus dengan MiniMax image-01, mengikuti gaya yang dipilih (foto realistis atau kartun).
   Pada gaya realistis, kartu mandi dan ke toilet tetap memakai gambar bawaan berisi benda, tanpa anak.

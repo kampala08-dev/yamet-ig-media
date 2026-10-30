@@ -184,15 +184,21 @@ footer a{color:var(--green)}
     tidur_siang: 'Tidur siang', main: 'Bermain', belajar: 'Mewarnai / belajar', salat: 'Salat & berdoa', mengaji: 'Mengaji',
     makan_malam: 'Makan malam', beres_mainan: 'Beres-beres mainan', baju_tidur: 'Pakai baju tidur', cuci_kaki: 'Cuci kaki',
     minum_air: 'Minum air putih', dongeng: 'Dengar dongeng', tidur: 'Tidur malam',
-    doa_kristen: 'Berdoa', gereja: 'Sekolah Minggu', doa_buddha: 'Berdoa', vihara: 'Sekolah Minggu'
+    doa_kristen: 'Berdoa', gereja: 'Sekolah Minggu', doa_buddha: 'Berdoa', vihara: 'Sekolah Minggu',
+    terapi_bt: 'Terapi BT', terapi_pss: 'Preschool Skills', terapi_wicara: 'Terapi Wicara',
+    terapi_si: 'Sensori Integrasi', terapi_fisio: 'Fisioterapi', toilet_training: 'Toilet training'
   };
+  // satu gambar untuk beberapa kegiatan: BT, PSS, dan terapi wicara sama-sama di ruang kelas terapi
+  const GAMBAR = { terapi_bt: 'terapi_kelas', terapi_pss: 'terapi_kelas', terapi_wicara: 'terapi_kelas' };
+  const SELALU_KARTUN = ['toilet_training']; // toilet training selalu memakai gambar kartun
+  const TANPA_AI = ['toilet_training'];
   // kartu ibadah per agama; urutannya berpasangan (doa harian, lalu kegiatan rohani)
   const IBADAH = { islam: ['salat', 'mengaji'], kristen: ['doa_kristen', 'gereja'], buddha: ['doa_buddha', 'vihara'] };
   const IBADAH_SEMUA = Object.values(IBADAH).flat();
   const T = (list) => list.map(([time, key, label]) => ({ time, key, label: label || ACTS[key] }));
   const TEMPLATES = {
     sekolah: { name: 'Hari sekolah', rows: T([['05:30','bangun'],['05:40','toilet'],['05:50','mandi'],['06:05','pakai_baju'],['06:15','sarapan'],['06:35','sikat_gigi'],['06:45','berangkat','Berangkat sekolah'],['07:00','sekolah'],['12:30','makan_siang'],['13:30','tidur_siang'],['15:30','main'],['16:30','mandi','Mandi sore'],['18:00','salat'],['18:30','makan_malam'],['19:15','belajar'],['19:45','beres_mainan'],['20:00','baju_tidur'],['20:10','sikat_gigi'],['20:20','dongeng'],['20:30','tidur']]) },
-    terapi: { name: 'Hari terapi', rows: T([['06:00','bangun'],['06:10','toilet'],['06:20','mandi'],['06:40','pakai_baju'],['07:00','sarapan'],['07:30','sikat_gigi'],['08:00','berangkat','Berangkat terapi'],['08:30','terapi','Terapi di YAMET'],['12:00','makan_siang'],['13:00','tidur_siang'],['15:00','main'],['16:30','mandi','Mandi sore'],['18:30','makan_malam'],['19:45','baju_tidur'],['19:55','sikat_gigi'],['20:05','dongeng'],['20:30','tidur']]) },
+    terapi: { name: 'Hari terapi', rows: T([['06:00','bangun'],['06:10','toilet'],['06:20','mandi'],['06:40','pakai_baju'],['07:00','sarapan'],['07:30','sikat_gigi'],['08:00','berangkat','Berangkat terapi'],['08:30','terapi_bt','Terapi di YAMET Dempo'],['12:00','makan_siang'],['13:00','tidur_siang'],['15:00','main'],['16:30','mandi','Mandi sore'],['18:30','makan_malam'],['19:45','baju_tidur'],['19:55','sikat_gigi'],['20:05','dongeng'],['20:30','tidur']]) },
     libur: { name: 'Akhir pekan', rows: T([['06:30','bangun'],['06:40','toilet'],['07:00','mandi'],['07:30','sarapan'],['08:30','main'],['10:30','beres_mainan'],['12:00','makan_siang'],['13:00','tidur_siang'],['15:30','main','Main di luar'],['16:30','mandi','Mandi sore'],['18:30','makan_malam'],['19:45','sikat_gigi'],['20:00','dongeng'],['20:30','tidur']]) },
     malam: { name: 'Ritual malam', rows: T([['19:30','baju_tidur'],['19:40','cuci_kaki'],['19:45','sikat_gigi'],['19:55','minum_air'],['20:00','dongeng'],['20:15','tidur']]) },
     kosong: { name: 'Mulai dari kosong', rows: [] }
@@ -204,8 +210,10 @@ footer a{color:var(--green)}
     get() { try { return JSON.parse(localStorage.getItem('yamet-jadwal') || 'null'); } catch (e) { return null; } },
     set() { try { localStorage.setItem('yamet-jadwal', JSON.stringify({ name: state.name, gender: state.gender, style: state.style, agama: state.agama, template: state.template, rows: state.rows.map(r => ({ time: r.time, key: r.key, label: r.label })) })); } catch (e) { /* tidak apa-apa */ } }
   };
-  const iconUrl = (key) => (state.style === 'kartun' ? ICON_BASE : FOTO_BASE) + key + '-' + state.gender + '.jpg';
-  const aiFor = (r) => (!r.plain && state.ai[r.key]) || null;
+  // kunci gambar: dongeng memakai versi ayah untuk selain Islam; beberapa terapi berbagi satu gambar
+  const imgKey = (k) => (k === 'dongeng' && state.agama !== 'islam') ? 'dongeng_ayah' : (GAMBAR[k] || k);
+  const iconUrl = (key) => (state.style === 'kartun' || SELALU_KARTUN.includes(key) ? ICON_BASE : FOTO_BASE) + imgKey(key) + '-' + state.gender + '.jpg';
+  const aiFor = (r) => (!r.plain && state.ai[imgKey(r.key)]) || null;
   const imgFor = (r) => r.own || aiFor(r) || iconUrl(r.key);
   const tagFor = (r) => r.own ? 'Foto' : (aiFor(r) ? 'AI' : '');
   const fmtTime = (t) => (t || '').replace(':', '.');
@@ -279,7 +287,7 @@ footer a{color:var(--green)}
       const label = ACTS[k];
       const b = document.createElement('button');
       b.type = 'button';
-      b.innerHTML = '<img alt="" loading="lazy" src="' + (state.ai[k] || iconUrl(k)) + '">' + label;
+      b.innerHTML = '<img alt="" loading="lazy" src="' + (state.ai[imgKey(k)] || iconUrl(k)) + '">' + label;
       b.addEventListener('click', () => {
         const last = state.rows[state.rows.length - 1];
         state.rows.push({ time: last ? last.time : '07:00', key: k, label });
@@ -295,7 +303,7 @@ footer a{color:var(--green)}
   function openGanti(i) {
     gantiIndex = i;
     const r = state.rows[i];
-    $('#btn-pakai-ai').hidden = !(r && state.ai[r.key]);
+    $('#btn-pakai-ai').hidden = !(r && state.ai[imgKey(r.key)]);
     $('#sheet-ganti').classList.add('open');
   }
   function closeSheets() { document.querySelectorAll('.sheet').forEach(s => s.classList.remove('open')); }
@@ -409,7 +417,7 @@ footer a{color:var(--green)}
     const code = $('#kode').value.trim();
     const f = $('#foto-wajah').files[0];
     const FOTO_BENDA = ['mandi', 'toilet']; // gaya realistis: foto benda tetap, tanpa anak
-    const keys = actsTampil().filter(k => !IBADAH_SEMUA.includes(k) && (state.style !== 'real' || !FOTO_BENDA.includes(k)));
+    const keys = [...new Set(actsTampil().filter(k => !IBADAH_SEMUA.includes(k) && !TANPA_AI.includes(k) && (state.style !== 'real' || !FOTO_BENDA.includes(k))).map(imgKey))];
     if (!code) { st.className = 'status err'; st.textContent = 'Isi kode akses dulu.'; return; }
     if (!f) { st.className = 'status err'; st.textContent = 'Pilih foto wajah si kecil.'; return; }
     if (!$('#setuju').checked) { st.className = 'status err'; st.textContent = 'Centang persetujuan orang tua/wali dulu.'; return; }
@@ -425,7 +433,7 @@ footer a{color:var(--green)}
       const n = Object.keys(data.cards || {}).length;
       st.className = 'status ok';
       st.textContent = n + ' kartu dengan wajah si kecil sudah dipasang di semua template.' +
-        (state.style === 'real' ? ' Kartu ibadah, mandi, dan ke toilet tetap memakai gambar bawaan.' : ' Kartu ibadah tetap memakai gambar bawaan.') +
+        (state.style === 'real' ? ' Kartu ibadah, mandi, ke toilet, dan toilet training tetap memakai gambar bawaan.' : ' Kartu ibadah dan toilet training tetap memakai gambar bawaan.') +
         (data.failed && data.failed.length ? ' ' + data.failed.length + ' kartu gagal dan tetap memakai gambar bawaan.' + (data.bisaUlang ? ' Kode belum terpakai, jadi boleh dicoba sekali lagi.' : '') : '') +
         ' Kartu yang kurang pas bisa diketuk lalu pilih "Pakai gambar bawaan". Unduh PDF sebelum menutup halaman, karena foto tidak kami simpan.';
       $('#foto-wajah').value = '';

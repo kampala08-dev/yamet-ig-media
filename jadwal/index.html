@@ -118,7 +118,7 @@ footer a{color:var(--green)}
   <p class="hint">Opsional. Gambar ikon di atas sudah bisa langsung dipakai.</p>
   <details class="ai">
     <summary>Khusus pasien YAMET: semua gambar pakai wajah si kecil</summary>
-    <p class="hint">Dari satu foto wajah, kami buatkan <b>semua 22 kartu kegiatan</b> dengan wajah si kecil, jadi template apa pun yang dipilih langsung memakai wajahnya. Butuh kode akses dari terapis YAMET (satu kode untuk sekali buat). Prosesnya sekitar 1–2 menit, jangan tutup halaman.</p>
+    <p class="hint">Dari satu foto wajah, kami buatkan <b>semua 22 kartu kegiatan</b> dengan wajah si kecil, jadi template apa pun yang dipilih langsung memakai wajahnya. Butuh kode akses dari terapis YAMET (satu kode untuk sekali buat). Prosesnya sekitar 2–3 menit, jangan tutup halaman.</p>
     <label>Gaya gambar</label>
     <div class="seg" id="gaya">
       <button type="button" data-s="real" aria-pressed="true">Foto realistis</button>
@@ -367,7 +367,8 @@ footer a{color:var(--green)}
     const st = $('#ai-status'); st.className = 'status';
     const code = $('#kode').value.trim();
     const f = $('#foto-wajah').files[0];
-    const keys = Object.keys(ACTS);
+    const FOTO_BENDA = ['mandi', 'toilet']; // gaya realistis: foto benda tetap, tanpa anak
+    const keys = Object.keys(ACTS).filter(k => state.style !== 'real' || !FOTO_BENDA.includes(k));
     if (!code) { st.className = 'status err'; st.textContent = 'Isi kode akses dulu.'; return; }
     if (!f) { st.className = 'status err'; st.textContent = 'Pilih foto wajah si kecil.'; return; }
     if (!$('#setuju').checked) { st.className = 'status err'; st.textContent = 'Centang persetujuan orang tua/wali dulu.'; return; }
@@ -379,9 +380,10 @@ footer a{color:var(--green)}
       const data = await resp.json().catch(() => ({}));
       if (!resp.ok || !data.ok) throw new Error(data.error || ('Gagal (' + resp.status + ')'));
       for (const [k, v] of Object.entries(data.cards || {})) state.ai[k] = await cropCard(v);
-      const n = Object.keys(data.cards || {}).length;
+      if (state.style === 'real') FOTO_BENDA.forEach(k => { state.ai[k] = ICON_BASE + 'foto-' + k + '.jpg'; });
+      const n = Object.keys(data.cards || {}).length + (state.style === 'real' ? FOTO_BENDA.length : 0);
       st.className = 'status ok';
-      st.textContent = n + ' kartu jadi dan sudah dipasang di semua template.' + (data.failed && data.failed.length ? ' ' + data.failed.length + ' kartu gagal dan tetap memakai ikon.' : '') + ' Unduh PDF sebelum menutup halaman, karena foto tidak kami simpan.';
+      st.textContent = n + ' kartu jadi dan sudah dipasang di semua template.' + (data.failed && data.failed.length ? ' ' + data.failed.length + ' kartu gagal dan tetap memakai ikon.' + (data.bisaUlang ? ' Kode belum terpakai, jadi boleh dicoba sekali lagi.' : '') : '') + ' Unduh PDF sebelum menutup halaman, karena foto tidak kami simpan.';
       $('#foto-wajah').value = '';
       render();
     } catch (err) {

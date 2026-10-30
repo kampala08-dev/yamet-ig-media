@@ -29,6 +29,6 @@ Reels: MP4 H.264 + AAC, 9:16, 3 detik–15 menit.
 - `jadwal/ikon/`: ikon kegiatan bergaya YAMET (`<kegiatan>-L.jpg` anak laki-laki, `-P.jpg` perempuan),
   dibuat dengan MiniMax image-01.
 - Kartu bergambar wajah anak dibuat lewat `POST /webhook/jadwal/buat` (butuh kode akses sekali pakai):
-  semua 22 kegiatan sekaligus, gaya foto realistis (default) atau kartun. Pada gaya realistis,
-  kartu mandi dan ke toilet hanya berisi foto benda, tanpa anak.
+  semua kegiatan sekaligus, gaya foto realistis (default) atau kartun. Pada gaya realistis,
+  kartu mandi dan ke toilet memakai foto benda tetap (`ikon/foto-mandi.jpg`, `ikon/foto-toilet.jpg`), tanpa anak.
   Foto anak tidak disimpan di repo ini maupun di riwayat n8n.

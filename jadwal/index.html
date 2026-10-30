@@ -114,7 +114,8 @@ footer a{color:var(--green)}
 </section>
 
 <section aria-labelledby="h-ai">
-  <h2 id="h-ai"><span class="num">4</span>Kartu bergambar si kecil <small style="font-weight:600;color:var(--muted)">(opsional)</small></h2>
+  <h2 id="h-ai"><span class="num">4</span>Kartu bergambar si kecil</h2>
+  <p class="hint">Opsional. Gambar ikon di atas sudah bisa langsung dipakai.</p>
   <details class="ai">
     <summary>Khusus pasien YAMET: ubah gambar jadi mirip si kecil</summary>
     <p class="hint">Dari satu foto wajah, kami gambar ulang tiap kegiatan dengan gaya kartun yang mirip si kecil. Butuh kode akses dari terapis YAMET. Prosesnya sekitar 30–60 detik.</p>
@@ -407,7 +408,7 @@ footer a{color:var(--green)}
       doc.addImage(imgs[i], 'JPEG', x + 2, y + 2, s, s);
       const box = Math.min(9, rowH * 0.4);
       const textX = x + s + 6, textW = colW - s - 10 - box - 4;
-      const big = Math.min(16, rowH * 0.5), small = Math.min(13, rowH * 0.4);
+      const big = Math.min(16, rowH * 0.62), small = Math.min(13, rowH * 0.5);
       doc.setTextColor(...GREEN); doc.setFont('helvetica', 'bold'); doc.setFontSize(big);
       doc.text(fmtTime(r.time), textX, y + rowH / 2 - 0.5);
       doc.setTextColor(...INK); doc.setFont('helvetica', 'normal'); doc.setFontSize(small);

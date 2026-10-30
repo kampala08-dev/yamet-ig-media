@@ -24,8 +24,12 @@ Reels: MP4 H.264 + AAC, 9:16, 3 detik–15 menit.
 
 ## Generator jadwal bergambar (`jadwal/`)
 
-- `jadwal/index.html`: halaman generator, disajikan oleh workflow n8n **24 - Jadwal Bergambar**
-  di `https://n8n-hc8x.srv2014501.hstgr.cloud/webhook/jadwal`. PDF-nya berisi papan jadwal tiga
+- `jadwal/index.html`: halaman generator di **https://jadwal.yametpalembang.io** (GitHub Pages; workflow
+  `.github/workflows/pages.yml` menerbitkan folder `jadwal/` setiap ada perubahan di folder itu; DNS
+  `jadwal` CNAME ke `kampala08-dev.github.io` di Hostinger). Di sana gambar diambil dari situsnya sendiri
+  dan isian orang tua tersimpan otomatis di browser HP (autosave). Link lama
+  `https://n8n-hc8x.srv2014501.hstgr.cloud/webhook/jadwal` (workflow n8n **24 - Jadwal Bergambar**)
+  mengalihkan ke alamat ini; kartu wajah AI tetap dibuat oleh workflow itu. PDF-nya berisi papan jadwal tiga
   halaman menurut jam (pagi sebelum 11.00, siang 11.00–17.59, malam mulai 18.00; lebih dari 12
   kegiatan dalam satu bagian berlanjut ke halaman berikutnya), lalu halaman kartu untuk digunting.
   Daftar kegiatan di halaman selalu urut menurut jam (hari dihitung mulai 04.00): begitu jam diubah,

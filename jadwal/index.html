@@ -163,7 +163,7 @@ footer a{color:var(--green)}
   <p class="hint">Opsional. Gambar bawaan di atas sudah bisa langsung dipakai.</p>
   <details class="ai">
     <summary>Khusus pasien YAMET: semua gambar pakai wajah si kecil</summary>
-    <p class="hint">Dari satu foto wajah, kami buatkan <b>semua kartu kegiatan</b> dengan wajah si kecil, mengikuti gaya gambar dan kartu ibadah di langkah 1, jadi template apa pun yang dipilih langsung memakai wajahnya. Butuh kode akses dari terapis YAMET (satu kode untuk sekali buat). Prosesnya sekitar 3–4 menit, jangan tutup halaman.</p>
+    <p class="hint">Dari satu foto wajah, kami buatkan <b>semua kartu kegiatan</b> dengan wajah si kecil, mengikuti gaya gambar dan kartu ibadah di langkah 1, jadi template apa pun yang dipilih langsung memakai wajahnya. Kegiatan tambahan (berenang, les piano, ekstrakurikuler, bela diri) ikut dibuat bila sudah ada di jadwal. Butuh kode akses dari terapis YAMET (satu kode untuk sekali buat). Prosesnya sekitar 3–4 menit, jangan tutup halaman.</p>
     <p class="hint">Demi keamanan foto anak, kartu <b>mandi</b> dan <b>ke toilet</b> pada gaya foto realistis tetap memakai foto benda (gayung, sabun, kloset), tanpa sosok anak. <b>Kartu ibadah</b> juga tetap memakai gambar bawaan supaya gerakan dan pakaian ibadahnya benar.</p>
     <p class="hint">Kalau foto ayah/ibu diisi di langkah 1, kartu belajar bersama orang tua dan dengar dongeng memakai wajah ayah/ibu, dengan si kecil tampak dari belakang.</p>
     <p class="hint">Kalau si kecil atau ibu berjilbab, periksa kartunya. Bila ada rambut yang terlihat, ketuk kartu itu lalu pilih "Pakai gambar bawaan".</p>
@@ -185,10 +185,10 @@ footer a{color:var(--green)}
   <p class="hint" style="margin:0 0 8px">Ditambahkan di akhir PDF: satu halaman per kegiatan, berisi kartu langkah bernomor dan tabel centang Senin–Minggu. Langkahnya mengikuti lembar latihan terapis YAMET.</p>
   <div id="urutan-list"></div>
   <label>Kartu AAC emosi (opsional)</label>
-  <p class="hint" style="margin:0 0 8px">Satu halaman A4 mendatar di akhir PDF: 24 kartu emosi bernomor. Bingkai hijau dengan tanda centang untuk perasaan nyaman, merah dengan tanda silang untuk perasaan tidak nyaman. Bisa ditempel di dinding, atau digunting jadi kartu supaya si kecil bisa menunjuk perasaannya.</p>
-  <label class="urutan-item"><input type="checkbox" id="pakai-emosi"><span><b>Kartu AAC Emosi</b> · 24 emosi</span>
-    <img class="emosi-pratinjau" alt="Pratinjau papan Kartu AAC Emosi" loading="lazy" src="https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/emosi/kartu-aac-emosi-kecil.jpg"></label>
-  <a class="tautan-kecil" href="https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/emosi/kartu-aac-emosi.jpg" target="_blank" rel="noopener">Buka gambar papan emosi saja (JPG)</a>
+  <p class="hint" style="margin:0 0 8px">Satu halaman A4 mendatar di akhir PDF: 24 kartu emosi bernomor. Bingkai hijau dengan tanda centang untuk perasaan nyaman, merah dengan tanda silang untuk perasaan tidak nyaman. Bisa ditempel di dinding, atau digunting jadi kartu supaya si kecil bisa menunjuk perasaannya. Gambarnya mengikuti pilihan di atas: anak laki-laki, anak perempuan, atau anak perempuan berjilbab bila agamanya Islam.</p>
+  <label class="urutan-item"><input type="checkbox" id="pakai-emosi"><span><b>Kartu AAC Emosi</b> · 24 emosi · <span id="emosi-ket">anak laki-laki</span></span>
+    <img class="emosi-pratinjau" id="emosi-pratinjau" alt="Pratinjau papan Kartu AAC Emosi" loading="lazy" src="https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/emosi/kartu-aac-emosi-L-kecil.jpg"></label>
+  <a class="tautan-kecil" id="emosi-jpg" href="https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/emosi/kartu-aac-emosi-L.jpg" target="_blank" rel="noopener">Buka gambar papan emosi saja (JPG)</a>
   <button type="button" class="btn full" id="btn-pdf">Unduh PDF jadwal</button>
   <div class="status" id="pdf-status" role="status" aria-live="polite"></div>
 </section>
@@ -225,7 +225,8 @@ footer a{color:var(--green)}
   const ENDPOINT = 'https://n8n-hc8x.srv2014501.hstgr.cloud/webhook/jadwal/buat';
   const ICON_BASE = 'https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/ikon/'; // kartun
   const FOTO_BASE = 'https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/foto/'; // foto realistis (Higgsfield GPT Image 2.5)
-  const EMOSI_PAPAN = 'https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/emosi/kartu-aac-emosi.jpg'; // papan Kartu AAC Emosi (GPT Image 2.5)
+  // papan Kartu AAC Emosi (GPT Image 2.5): laki-laki, perempuan, dan perempuan berjilbab (Islam)
+  const EMOSI_BASE = 'https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/emosi/kartu-aac-emosi-';
   const ACTS = {
     bangun: 'Bangun tidur', toilet: 'Ke toilet', mandi: 'Mandi', sikat_gigi: 'Sikat gigi', pakai_baju: 'Pakai baju',
     sarapan: 'Sarapan', berangkat: 'Berangkat', sekolah: 'Sekolah', terapi: 'Terapi', makan_siang: 'Makan siang',
@@ -236,8 +237,10 @@ footer a{color:var(--green)}
     terapi_bt: 'Terapi BT', terapi_pss: 'Preschool Skills', terapi_wicara: 'Terapi Wicara',
     terapi_si: 'Sensori Integrasi', terapi_fisio: 'Fisioterapi', toilet_training: 'Toilet training',
     snack_time: 'Snack time', cuci_tangan: 'Cuci tangan', belajar_ortu: 'Belajar bersama orang tua',
-    motorik_kasar: 'Bermain motorik kasar', jalan_pagi: 'Jalan pagi', main_ortu: 'Bermain bersama orang tua'
+    motorik_kasar: 'Bermain motorik kasar', jalan_pagi: 'Jalan pagi', main_ortu: 'Bermain bersama orang tua',
+    berenang: 'Berenang', les_piano: 'Les piano', ekskul: 'Ekstrakurikuler', bela_diri: 'Latihan bela diri'
   };
+  const TAMBAHAN = ['berenang', 'les_piano', 'ekskul', 'bela_diri']; // kegiatan tambahan: kartu wajah AI dibuat bila ada di jadwal
   // satu gambar untuk beberapa kegiatan: BT, PSS, dan terapi wicara sama-sama di ruang kelas terapi;
   // "bermain bersama orang tua" memakai gambar bermain, ditambah foto ayah/ibu bila ada
   const GAMBAR = { terapi_bt: 'terapi_kelas', terapi_pss: 'terapi_kelas', terapi_wicara: 'terapi_kelas', main_ortu: 'main' };
@@ -295,6 +298,13 @@ footer a{color:var(--green)}
     });
   }
   $('#pakai-emosi').addEventListener('change', e => { state.emosi = e.target.checked; store.set(); });
+  const emosiVarian = () => state.gender === 'L' ? 'L' : (state.agama === 'islam' ? 'P-jilbab' : 'P');
+  const emosiUrl = (kecil) => EMOSI_BASE + emosiVarian() + (kecil ? '-kecil' : '') + '.jpg';
+  function renderEmosi() {
+    $('#emosi-pratinjau').src = emosiUrl(true);
+    $('#emosi-jpg').href = emosiUrl(false);
+    $('#emosi-ket').textContent = { L: 'anak laki-laki', P: 'anak perempuan', 'P-jilbab': 'anak perempuan berjilbab' }[emosiVarian()];
+  }
   const fmtTime = (t) => (t || '').replace(':', '.');
   const actsTampil = () => Object.keys(ACTS).filter(k => !IBADAH_SEMUA.includes(k) || IBADAH[state.agama].includes(k));
   function pakaiAgama(agama) {
@@ -468,7 +478,7 @@ footer a{color:var(--green)}
   document.querySelectorAll('#gender button').forEach(b => b.addEventListener('click', () => {
     state.gender = b.dataset.g;
     document.querySelectorAll('#gender button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-    store.set(); render(); renderUrutan();
+    store.set(); render(); renderUrutan(); renderEmosi();
   }));
   $('#btn-foto-papan').addEventListener('click', () => $('#foto-papan').click());
   $('#foto-papan').addEventListener('change', async e => {
@@ -501,7 +511,7 @@ footer a{color:var(--green)}
   document.querySelectorAll('#agama button').forEach(b => b.addEventListener('click', () => {
     pakaiAgama(b.dataset.a);
     document.querySelectorAll('#agama button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-    store.set(); render();
+    store.set(); render(); renderEmosi();
   }));
   document.querySelectorAll('#gaya button').forEach(b => b.addEventListener('click', () => {
     state.style = b.dataset.s;
@@ -516,7 +526,8 @@ footer a{color:var(--green)}
     const f = $('#foto-wajah').files[0];
     const FOTO_BENDA = ['mandi', 'toilet']; // gaya realistis: foto benda tetap, tanpa anak
     const bisaAI = (k) => !IBADAH_SEMUA.includes(k) && !TANPA_AI.includes(k) && (state.style !== 'real' || !FOTO_BENDA.includes(k));
-    const keys = [...new Set(actsTampil().filter(bisaAI).map(imgKey).concat(state.rows.filter(r => bisaAI(r.key)).map(imgKeyRow)))];
+    // kegiatan tambahan (tidak semua anak ikut) hanya dibuat bila ada di jadwal, supaya prosesnya tidak makin lama
+    const keys = [...new Set(actsTampil().filter(k => bisaAI(k) && !TAMBAHAN.includes(k)).map(imgKey).concat(state.rows.filter(r => bisaAI(r.key)).map(imgKeyRow)))];
     // ada foto ayah/ibu: buat kartu bersama ayah maupun ibu, supaya tiap kartu bisa dipilih
     if (state.ortuAI.ibu) Object.keys(AYAH).forEach(k => { if (!keys.includes(k)) keys.push(k); });
     if (state.ortuAI.ayah) Object.values(AYAH).forEach(k => { if (!keys.includes(k)) keys.push(k); });
@@ -723,7 +734,7 @@ footer a{color:var(--green)}
     }
     // papan Kartu AAC Emosi: satu halaman A4 mendatar di akhir PDF
     if (state.emosi) {
-      const papan = await toDataUrl(EMOSI_PAPAN, 'Kartu AAC Emosi');
+      const papan = await toDataUrl(emosiUrl(false), 'Kartu AAC Emosi');
       const p = doc.getImageProperties(papan);
       doc.addPage('a4', 'landscape');
       const w = Math.min(281, 190 * p.width / p.height), h = w * p.height / p.width;
@@ -747,7 +758,7 @@ footer a{color:var(--green)}
   } else {
     state.rows = TEMPLATES.sekolah.rows.map(r => Object.assign({}, r));
   }
-  renderTemplates(); render(); renderUrutan();
+  renderTemplates(); render(); renderUrutan(); renderEmosi();
 })();
 </script>
 </body>

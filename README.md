@@ -57,13 +57,18 @@ Reels: MP4 H.264 + AAC, 9:16, 3 detik–15 menit.
   Dibuat dengan Seedream 5.0 Lite (jatah Unlimited di aplikasi web Higgsfield) sebagai satu gambar grid
   5 x 2 per urutan, lalu dipotong per panel; beberapa langkah diganti foto close-up tangan. Di PDF, tiap
   urutan yang dipilih menjadi satu halaman: kartu bernomor dan tabel centang Senin–Minggu.
-- Kartu AAC Emosi (`jadwal/emosi/kartu-aac-emosi.jpg`, pratinjau `kartu-aac-emosi-kecil.jpg`): satu papan
-  24 emosi bernomor (hijau ✓ perasaan nyaman, merah ✗ tidak nyaman), dibuat sekali render dengan Higgsfield
-  GPT Image 2.5 dari `tata-letak-papan-emosi.png` (tata letak teks saja) dan anak acuan laki-laki yang sama
-  dengan kartu foto. Gambar yang sama dipakai untuk semua pilihan jenis kelamin dan gaya. Bila dicentang,
-  papan ini menjadi halaman A4 mendatar di akhir PDF.
+- Kegiatan tambahan: `berenang`, `les_piano`, `ekskul` (ekstrakurikuler, digambarkan kegiatan Pramuka),
+  `bela_diri` (karate). Foto dan kartunnya dibuat dengan Seedream 5.0 Lite dari anak acuan yang sama
+  (`jadwal/acuan/anak-L.jpg`, `anak-P.jpg`, foto anak buatan AI). Kartu wajah AI untuk kegiatan ini hanya
+  dibuat bila kegiatannya ada di jadwal.
+- Kartu AAC Emosi (`jadwal/emosi/kartu-aac-emosi-<L|P|P-jilbab>.jpg`, pratinjau `...-kecil.jpg`): papan
+  24 emosi bernomor (hijau ✓ perasaan nyaman, merah ✗ tidak nyaman), tiap versi dibuat sekali render dengan
+  Higgsfield GPT Image 2.5 dari `tata-letak-papan-emosi.png` (tata letak teks saja) dan anak acuan yang sama
+  dengan kartu foto. Halaman memilih versinya otomatis: laki-laki, perempuan, atau perempuan berjilbab bila
+  agamanya Islam. Bila dicentang, papan ini menjadi halaman A4 mendatar di akhir PDF.
 - Kartu bergambar wajah anak dibuat lewat `POST /webhook/jadwal/buat` (butuh kode akses sekali pakai):
-  semua kegiatan sekaligus dengan MiniMax image-01, mengikuti gaya yang dipilih (foto realistis atau kartun).
+  semua kegiatan sekaligus dengan MiniMax image-01, mengikuti gaya yang dipilih (foto realistis atau kartun);
+  kegiatan tambahan hanya bila ada di jadwal.
   Pada gaya realistis, kartu mandi dan ke toilet tetap memakai gambar bawaan berisi benda, tanpa anak.
   Kartu ibadah selalu memakai gambar bawaan (MiniMax belum bisa menjamin gerakan ibadah dan jilbab yang benar).
   Foto anak tidak disimpan di repo ini maupun di riwayat n8n.

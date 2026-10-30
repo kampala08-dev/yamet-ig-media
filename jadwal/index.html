@@ -52,6 +52,8 @@ input:focus{outline:3px solid rgba(23,97,74,.25);border-color:var(--green)}
 .urutan-item input{width:18px;height:18px;margin:0;flex:none}
 .urutan-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;width:100%}
 .urutan-strip img{width:100%;aspect-ratio:1;border-radius:6px;object-fit:cover;background:#fff;display:block}
+.emosi-pratinjau{width:100%;aspect-ratio:2048/1360;border-radius:8px;border:1px solid var(--line);background:#fff;display:block}
+.tautan-kecil{display:inline-block;font-size:13px;font-weight:600;color:var(--green);margin:0 0 12px}
 .cek-kecil{display:flex;gap:6px;align-items:center;font-size:13px;font-weight:500;margin:6px 0 0;white-space:nowrap}
 .cek-kecil input{width:16px;height:16px;margin:0}
 #pilih-ortu .btn[aria-pressed=true]{background:var(--green);color:#fff}
@@ -182,6 +184,11 @@ footer a{color:var(--green)}
   <label>Kartu urutan langkah (opsional)</label>
   <p class="hint" style="margin:0 0 8px">Ditambahkan di akhir PDF: satu halaman per kegiatan, berisi kartu langkah bernomor dan tabel centang Senin–Minggu. Langkahnya mengikuti lembar latihan terapis YAMET.</p>
   <div id="urutan-list"></div>
+  <label>Kartu AAC emosi (opsional)</label>
+  <p class="hint" style="margin:0 0 8px">Satu halaman A4 mendatar di akhir PDF: 24 kartu emosi bernomor. Bingkai hijau dengan tanda centang untuk perasaan nyaman, merah dengan tanda silang untuk perasaan tidak nyaman. Bisa ditempel di dinding, atau digunting jadi kartu supaya si kecil bisa menunjuk perasaannya.</p>
+  <label class="urutan-item"><input type="checkbox" id="pakai-emosi"><span><b>Kartu AAC Emosi</b> · 24 emosi</span>
+    <img class="emosi-pratinjau" alt="Pratinjau papan Kartu AAC Emosi" loading="lazy" src="https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/emosi/kartu-aac-emosi-kecil.jpg"></label>
+  <a class="tautan-kecil" href="https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/emosi/kartu-aac-emosi.jpg" target="_blank" rel="noopener">Buka gambar papan emosi saja (JPG)</a>
   <button type="button" class="btn full" id="btn-pdf">Unduh PDF jadwal</button>
   <div class="status" id="pdf-status" role="status" aria-live="polite"></div>
 </section>
@@ -218,6 +225,7 @@ footer a{color:var(--green)}
   const ENDPOINT = 'https://n8n-hc8x.srv2014501.hstgr.cloud/webhook/jadwal/buat';
   const ICON_BASE = 'https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/ikon/'; // kartun
   const FOTO_BASE = 'https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/foto/'; // foto realistis (Higgsfield GPT Image 2.5)
+  const EMOSI_PAPAN = 'https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/emosi/kartu-aac-emosi.jpg'; // papan Kartu AAC Emosi (GPT Image 2.5)
   const ACTS = {
     bangun: 'Bangun tidur', toilet: 'Ke toilet', mandi: 'Mandi', sikat_gigi: 'Sikat gigi', pakai_baju: 'Pakai baju',
     sarapan: 'Sarapan', berangkat: 'Berangkat', sekolah: 'Sekolah', terapi: 'Terapi', makan_siang: 'Makan siang',
@@ -254,11 +262,11 @@ footer a{color:var(--green)}
     kosong: { name: 'Mulai dari kosong', rows: [] }
   };
 
-  const state = { name: '', gender: 'L', template: 'sekolah', rows: [], boardPhoto: null, ortu: { ayah: null, ibu: null }, ortuAI: { ayah: null, ibu: null }, urutan: [], ai: {}, style: 'real', agama: 'islam' };
+  const state = { name: '', gender: 'L', template: 'sekolah', rows: [], boardPhoto: null, ortu: { ayah: null, ibu: null }, ortuAI: { ayah: null, ibu: null }, urutan: [], emosi: false, ai: {}, style: 'real', agama: 'islam' };
   const $ = (s) => document.querySelector(s);
   const store = {
     get() { try { return JSON.parse(localStorage.getItem('yamet-jadwal') || 'null'); } catch (e) { return null; } },
-    set() { try { localStorage.setItem('yamet-jadwal', JSON.stringify({ name: state.name, gender: state.gender, style: state.style, agama: state.agama, template: state.template, urutan: state.urutan, rows: state.rows.map(r => ({ time: r.time, key: r.key, label: r.label, ortu: r.ortu })) })); } catch (e) { /* tidak apa-apa */ } }
+    set() { try { localStorage.setItem('yamet-jadwal', JSON.stringify({ name: state.name, gender: state.gender, style: state.style, agama: state.agama, template: state.template, urutan: state.urutan, emosi: state.emosi, rows: state.rows.map(r => ({ time: r.time, key: r.key, label: r.label, ortu: r.ortu })) })); } catch (e) { /* tidak apa-apa */ } }
   };
   // kunci gambar: dongeng & belajar bersama orang tua memakai versi ayah untuk selain Islam (atau bila hanya foto ayah
   // yang diunggah; sebaliknya versi ibu bila hanya foto ibu); beberapa terapi berbagi satu gambar
@@ -286,6 +294,7 @@ footer a{color:var(--green)}
       box.appendChild(lab);
     });
   }
+  $('#pakai-emosi').addEventListener('change', e => { state.emosi = e.target.checked; store.set(); });
   const fmtTime = (t) => (t || '').replace(':', '.');
   const actsTampil = () => Object.keys(ACTS).filter(k => !IBADAH_SEMUA.includes(k) || IBADAH[state.agama].includes(k));
   function pakaiAgama(agama) {
@@ -712,6 +721,16 @@ footer a{color:var(--green)}
       doc.setDrawColor(...LINE); doc.setLineWidth(0.3); doc.rect(tx0, y0t, tw, rh * (U.steps.length + 1));
       footer();
     }
+    // papan Kartu AAC Emosi: satu halaman A4 mendatar di akhir PDF
+    if (state.emosi) {
+      const papan = await toDataUrl(EMOSI_PAPAN, 'Kartu AAC Emosi');
+      const p = doc.getImageProperties(papan);
+      doc.addPage('a4', 'landscape');
+      const w = Math.min(281, 190 * p.width / p.height), h = w * p.height / p.width;
+      doc.addImage(papan, 'JPEG', (297 - w) / 2, 8, w, h);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(120, 120, 120);
+      doc.text('Dibuat dengan generator Jadwal Bergambar YAMET Palembang · @yametpalembang', 148.5, 204, { align: 'center' });
+    }
     const safe = (state.name || 'si-kecil').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'si-kecil';
     doc.save('jadwal-' + safe + '.pdf');
   }
@@ -719,8 +738,9 @@ footer a{color:var(--green)}
   // mulai
   const saved = store.get();
   if (saved && Array.isArray(saved.rows)) {
-    Object.assign(state, { name: saved.name || '', gender: saved.gender === 'P' ? 'P' : 'L', style: saved.style === 'kartun' ? 'kartun' : 'real', agama: IBADAH[saved.agama] ? saved.agama : 'islam', urutan: Array.isArray(saved.urutan) ? saved.urutan.filter(k => URUTAN[k]) : [], template: TEMPLATES[saved.template] ? saved.template : 'sekolah', rows: saved.rows.filter(r => ACTS[r.key]) });
+    Object.assign(state, { name: saved.name || '', gender: saved.gender === 'P' ? 'P' : 'L', style: saved.style === 'kartun' ? 'kartun' : 'real', agama: IBADAH[saved.agama] ? saved.agama : 'islam', urutan: Array.isArray(saved.urutan) ? saved.urutan.filter(k => URUTAN[k]) : [], emosi: saved.emosi === true, template: TEMPLATES[saved.template] ? saved.template : 'sekolah', rows: saved.rows.filter(r => ACTS[r.key]) });
     $('#nama').value = state.name;
+    $('#pakai-emosi').checked = state.emosi;
     document.querySelectorAll('#gender button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.g === state.gender)));
     document.querySelectorAll('#gaya button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.s === state.style)));
     document.querySelectorAll('#agama button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.a === state.agama)));

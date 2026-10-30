@@ -51,6 +51,12 @@ Reels: MP4 H.264 + AAC, 9:16, 3 detik–15 menit.
   `jalan_pagi`. Fotonya dibuat dengan Higgsfield Seedream 5.0 Flash, kartunnya dengan MiniMax image-01.
   Template "Hari terapi" mengikuti jadwal harian anak yang terapi pagi di YAMET, dan "Libur terapi"
   mengikuti jadwal akhir pekannya (jalan pagi, lalu bermain bersama orang tua).
+- Kartu urutan langkah (`jadwal/foto/urutan/`, `jadwal/ikon/urutan/`, pola `<urutan>-<L|P>-<01..10>.jpg`):
+  toilet training (selalu kartun; langkah buka/pakai celana dan membersihkan diri memakai gambar benda,
+  tanpa sosok anak), cuci tangan & makan, gosok gigi. Langkahnya mengikuti lembar latihan terapis YAMET.
+  Dibuat dengan Seedream 5.0 Lite (jatah Unlimited di aplikasi web Higgsfield) sebagai satu gambar grid
+  5 x 2 per urutan, lalu dipotong per panel; beberapa langkah diganti foto close-up tangan. Di PDF, tiap
+  urutan yang dipilih menjadi satu halaman: kartu bernomor dan tabel centang Senin–Minggu.
 - Kartu bergambar wajah anak dibuat lewat `POST /webhook/jadwal/buat` (butuh kode akses sekali pakai):
   semua kegiatan sekaligus dengan MiniMax image-01, mengikuti gaya yang dipilih (foto realistis atau kartun).
   Pada gaya realistis, kartu mandi dan ke toilet tetap memakai gambar bawaan berisi benda, tanpa anak.

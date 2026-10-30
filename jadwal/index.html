@@ -48,6 +48,10 @@ input:focus{outline:3px solid rgba(23,97,74,.25);border-color:var(--green)}
 .ortu{display:flex;gap:10px;align-items:flex-start;min-width:0}
 .avatar.kecil{width:52px;height:52px}
 .btn.kecil{padding:7px 12px;font-size:14px;margin-top:4px}
+.urutan-item{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border:1.5px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px;font-size:14px;cursor:pointer}
+.urutan-item input{width:18px;height:18px;margin:0;flex:none}
+.urutan-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;width:100%}
+.urutan-strip img{width:100%;aspect-ratio:1;border-radius:6px;object-fit:cover;background:#fff;display:block}
 .cek-kecil{display:flex;gap:6px;align-items:center;font-size:13px;font-weight:500;margin:6px 0 0;white-space:nowrap}
 .cek-kecil input{width:16px;height:16px;margin:0}
 #pilih-ortu .btn[aria-pressed=true]{background:var(--green);color:#fff}
@@ -175,6 +179,9 @@ footer a{color:var(--green)}
 <section aria-labelledby="h-unduh">
   <h2 id="h-unduh"><span class="num">5</span>Unduh &amp; cetak</h2>
   <p class="hint">PDF A4: papan jadwal dibagi tiga halaman menurut jam, yaitu <b>pagi</b> (sebelum 11.00), <b>siang</b> (11.00–17.59), dan <b>malam</b> (mulai 18.00), dengan gambar besar dan kotak centang. Halaman berikutnya berisi kartu untuk digunting dan ditempel (pakai perekat/velcro supaya bisa dipindah).</p>
+  <label>Kartu urutan langkah (opsional)</label>
+  <p class="hint" style="margin:0 0 8px">Ditambahkan di akhir PDF: satu halaman per kegiatan, berisi kartu langkah bernomor dan tabel centang Senin–Minggu. Langkahnya mengikuti lembar latihan terapis YAMET.</p>
+  <div id="urutan-list"></div>
   <button type="button" class="btn full" id="btn-pdf">Unduh PDF jadwal</button>
   <div class="status" id="pdf-status" role="status" aria-live="polite"></div>
 </section>
@@ -231,6 +238,12 @@ footer a{color:var(--green)}
   // kartu ibadah per agama; urutannya berpasangan (doa harian, lalu kegiatan rohani)
   const IBADAH = { islam: ['salat', 'mengaji'], kristen: ['doa_kristen', 'gereja'], buddha: ['doa_buddha', 'vihara'] };
   const IBADAH_SEMUA = Object.values(IBADAH).flat();
+  // kartu urutan langkah (task analysis), mengikuti lembar latihan terapis YAMET; toilet training selalu kartun
+  const URUTAN = {
+    toilet: { name: 'Toilet training', kartun: true, steps: ['Rasakan ingin ke toilet', 'Berjalan menuju toilet', 'Buka pintu toilet', 'Masuk dan tutup pintu', 'Turunkan celana', 'Duduk di kloset', 'Bersihkan diri', 'Naikkan celana', 'Cuci tangan dengan sabun', 'Keluar dan tutup pintu'] },
+    cuci_makan: { name: 'Cuci tangan & makan', steps: ['Berjalan ke wastafel', 'Basahi tangan, pakai sabun', 'Gosok tangan', 'Bilas dengan air', 'Keringkan tangan', 'Ambil piring', 'Ambil nasi dan lauk', 'Makan dengan tertib', 'Minum perlahan', 'Rapikan alat makan'] },
+    gosok_gigi: { name: 'Gosok gigi', steps: ['Ambil odol', 'Buka tutup odol', 'Letakkan odol ke sikat', 'Basahi sikat dengan air', 'Gosok gigi depan', 'Gosok gigi samping', 'Gosok gigi bagian dalam', 'Gosok gigi belakang', 'Kumur-kumur', 'Simpan sikat gigi'] }
+  };
   const T = (list) => list.map(([time, key, label]) => ({ time, key, label: label || ACTS[key] }));
   const TEMPLATES = {
     sekolah: { name: 'Hari sekolah', rows: T([['05:30','bangun'],['05:40','toilet'],['05:50','mandi'],['06:05','pakai_baju'],['06:15','sarapan'],['06:35','sikat_gigi'],['06:45','berangkat','Berangkat sekolah'],['07:00','sekolah'],['12:30','makan_siang'],['13:30','tidur_siang'],['15:30','main'],['16:30','mandi','Mandi sore'],['18:00','salat'],['18:30','makan_malam'],['19:15','belajar'],['19:45','beres_mainan'],['20:00','baju_tidur'],['20:10','sikat_gigi'],['20:20','dongeng'],['20:30','tidur']]) },
@@ -241,11 +254,11 @@ footer a{color:var(--green)}
     kosong: { name: 'Mulai dari kosong', rows: [] }
   };
 
-  const state = { name: '', gender: 'L', template: 'sekolah', rows: [], boardPhoto: null, ortu: { ayah: null, ibu: null }, ortuAI: { ayah: null, ibu: null }, ai: {}, style: 'real', agama: 'islam' };
+  const state = { name: '', gender: 'L', template: 'sekolah', rows: [], boardPhoto: null, ortu: { ayah: null, ibu: null }, ortuAI: { ayah: null, ibu: null }, urutan: [], ai: {}, style: 'real', agama: 'islam' };
   const $ = (s) => document.querySelector(s);
   const store = {
     get() { try { return JSON.parse(localStorage.getItem('yamet-jadwal') || 'null'); } catch (e) { return null; } },
-    set() { try { localStorage.setItem('yamet-jadwal', JSON.stringify({ name: state.name, gender: state.gender, style: state.style, agama: state.agama, template: state.template, rows: state.rows.map(r => ({ time: r.time, key: r.key, label: r.label, ortu: r.ortu })) })); } catch (e) { /* tidak apa-apa */ } }
+    set() { try { localStorage.setItem('yamet-jadwal', JSON.stringify({ name: state.name, gender: state.gender, style: state.style, agama: state.agama, template: state.template, urutan: state.urutan, rows: state.rows.map(r => ({ time: r.time, key: r.key, label: r.label, ortu: r.ortu })) })); } catch (e) { /* tidak apa-apa */ } }
   };
   // kunci gambar: dongeng & belajar bersama orang tua memakai versi ayah untuk selain Islam (atau bila hanya foto ayah
   // yang diunggah; sebaliknya versi ibu bila hanya foto ibu); beberapa terapi berbagi satu gambar
@@ -259,6 +272,20 @@ footer a{color:var(--green)}
   const aiFor = (r) => (!r.plain && state.ai[imgKeyRow(r)]) || null;
   const imgFor = (r) => r.own || aiFor(r) || urlGambar(r.key, imgKeyRow(r));
   const tagFor = (r) => r.own ? 'Foto' : (aiFor(r) ? 'AI' : '');
+  const urutanUrl = (u, i) => (state.style === 'kartun' || URUTAN[u].kartun ? ICON_BASE : FOTO_BASE) + 'urutan/' + u + '-' + state.gender + '-' + String(i + 1).padStart(2, '0') + '.jpg';
+  function renderUrutan() {
+    const box = $('#urutan-list'); box.innerHTML = '';
+    Object.entries(URUTAN).forEach(([u, U]) => {
+      const lab = document.createElement('label'); lab.className = 'urutan-item';
+      lab.innerHTML = '<input type="checkbox"' + (state.urutan.includes(u) ? ' checked' : '') + '><span><b>' + U.name + '</b> · ' + U.steps.length + ' langkah</span>' +
+        '<span class="urutan-strip">' + U.steps.slice(0, 5).map((st, i) => '<img alt="" loading="lazy" src="' + urutanUrl(u, i) + '">').join('') + '</span>';
+      lab.querySelector('input').addEventListener('change', e => {
+        state.urutan = Object.keys(URUTAN).filter(k => k === u ? e.target.checked : state.urutan.includes(k));
+        store.set();
+      });
+      box.appendChild(lab);
+    });
+  }
   const fmtTime = (t) => (t || '').replace(':', '.');
   const actsTampil = () => Object.keys(ACTS).filter(k => !IBADAH_SEMUA.includes(k) || IBADAH[state.agama].includes(k));
   function pakaiAgama(agama) {
@@ -432,7 +459,7 @@ footer a{color:var(--green)}
   document.querySelectorAll('#gender button').forEach(b => b.addEventListener('click', () => {
     state.gender = b.dataset.g;
     document.querySelectorAll('#gender button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-    store.set(); render();
+    store.set(); render(); renderUrutan();
   }));
   $('#btn-foto-papan').addEventListener('click', () => $('#foto-papan').click());
   $('#foto-papan').addEventListener('change', async e => {
@@ -470,7 +497,7 @@ footer a{color:var(--green)}
   document.querySelectorAll('#gaya button').forEach(b => b.addEventListener('click', () => {
     state.style = b.dataset.s;
     document.querySelectorAll('#gaya button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-    store.set(); render();
+    store.set(); render(); renderUrutan();
   }));
 
   // AI
@@ -645,6 +672,46 @@ footer a{color:var(--green)}
       doc.rect(cx - 1.5, cy - 1.5, card + 3, card + lab + 1.5);
       doc.setLineDashPattern([], 0);
     });
+    // halaman kartu urutan langkah: kartu bernomor + tabel centang mingguan
+    for (const u of state.urutan.filter(k => URUTAN[k])) {
+      const U = URUTAN[u];
+      const gambar = await Promise.all(U.steps.map((st, i) => toDataUrl(urutanUrl(u, i), st)));
+      doc.addPage();
+      doc.setFillColor(...GREEN); doc.rect(0, 0, 210, 26, 'F');
+      doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.text(U.name, 12, 14);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...YEL); doc.text('Urutan langkah' + (state.name ? ' · ' + state.name : ''), 12, 21);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.text(U.steps.length + ' langkah', 198, 15.5, { align: 'right' });
+      const cols = 5, g = 4, cw = (190 - (cols - 1) * g) / cols, pad = 2, s = cw - 2 * pad, l8 = 8.5 * 0.3528 * 1.2, ch = s + 2 * pad + 2 + 2 * l8 + 2;
+      U.steps.forEach((st, i) => {
+        const x = 10 + (i % cols) * (cw + g), y = 32 + Math.floor(i / cols) * (ch + g);
+        doc.setFillColor(...SOFT); doc.setDrawColor(...LINE); doc.setLineWidth(0.3); doc.roundedRect(x, y, cw, ch, 2.5, 2.5, 'FD');
+        doc.addImage(gambar[i], 'JPEG', x + pad, y + pad, s, s);
+        doc.setFillColor(255, 255, 255); doc.circle(x + pad + 4.4, y + pad + 4.4, 4.1, 'F');
+        doc.setFillColor(...GREEN); doc.circle(x + pad + 4.4, y + pad + 4.4, 3.5, 'F');
+        doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.text(String(i + 1), x + pad + 4.4, y + pad + 5.7, { align: 'center' });
+        doc.setTextColor(...INK); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+        doc.text(doc.splitTextToSize(st, cw - 2 * pad).slice(0, 2), x + pad, y + pad + s + 2 + l8 * 0.8, { lineHeightFactor: 1.2 });
+      });
+      const ty = 32 + 2 * ch + g + 10, HARI = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+      doc.setTextColor(...GREEN); doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.text('Centang tiap langkah yang berhasil', 10, ty);
+      doc.setTextColor(...INK); doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.text('Tanggal mulai: ____/____/______', 200, ty, { align: 'right' });
+      const tx0 = 10, tw = 190, cNo = 9, cDay = 12, cStep = tw - cNo - cDay * HARI.length, rh = 10, y0t = ty + 4;
+      doc.setFillColor(...GREEN); doc.rect(tx0, y0t, tw, rh, 'F');
+      doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+      doc.text('No', tx0 + cNo / 2, y0t + 6.5, { align: 'center' }); doc.text('Langkah', tx0 + cNo + 3, y0t + 6.5);
+      HARI.forEach((h, j) => doc.text(h, tx0 + cNo + cStep + cDay * j + cDay / 2, y0t + 6.5, { align: 'center' }));
+      U.steps.forEach((st, i) => {
+        const yy = y0t + rh * (i + 1);
+        if (i % 2 === 0) { doc.setFillColor(...SOFT); doc.rect(tx0, yy, tw, rh, 'F'); }
+        doc.setTextColor(...INK); doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+        doc.text(String(i + 1), tx0 + cNo / 2, yy + 6.5, { align: 'center' });
+        doc.text(doc.splitTextToSize(st, cStep - 5)[0], tx0 + cNo + 3, yy + 6.5);
+        doc.setDrawColor(...GREEN); doc.setLineWidth(0.4);
+        HARI.forEach((h, j) => doc.roundedRect(tx0 + cNo + cStep + cDay * j + cDay / 2 - 2.8, yy + 2.2, 5.6, 5.6, 1, 1, 'S'));
+      });
+      doc.setDrawColor(...LINE); doc.setLineWidth(0.3); doc.rect(tx0, y0t, tw, rh * (U.steps.length + 1));
+      footer();
+    }
     const safe = (state.name || 'si-kecil').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'si-kecil';
     doc.save('jadwal-' + safe + '.pdf');
   }
@@ -652,7 +719,7 @@ footer a{color:var(--green)}
   // mulai
   const saved = store.get();
   if (saved && Array.isArray(saved.rows)) {
-    Object.assign(state, { name: saved.name || '', gender: saved.gender === 'P' ? 'P' : 'L', style: saved.style === 'kartun' ? 'kartun' : 'real', agama: IBADAH[saved.agama] ? saved.agama : 'islam', template: TEMPLATES[saved.template] ? saved.template : 'sekolah', rows: saved.rows.filter(r => ACTS[r.key]) });
+    Object.assign(state, { name: saved.name || '', gender: saved.gender === 'P' ? 'P' : 'L', style: saved.style === 'kartun' ? 'kartun' : 'real', agama: IBADAH[saved.agama] ? saved.agama : 'islam', urutan: Array.isArray(saved.urutan) ? saved.urutan.filter(k => URUTAN[k]) : [], template: TEMPLATES[saved.template] ? saved.template : 'sekolah', rows: saved.rows.filter(r => ACTS[r.key]) });
     $('#nama').value = state.name;
     document.querySelectorAll('#gender button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.g === state.gender)));
     document.querySelectorAll('#gaya button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.s === state.style)));
@@ -660,7 +727,7 @@ footer a{color:var(--green)}
   } else {
     state.rows = TEMPLATES.sekolah.rows.map(r => Object.assign({}, r));
   }
-  renderTemplates(); render();
+  renderTemplates(); render(); renderUrutan();
 })();
 </script>
 </body>

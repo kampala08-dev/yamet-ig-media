@@ -129,7 +129,7 @@ footer a{color:var(--green)}
   <p class="hint">Opsional. Gambar bawaan di atas sudah bisa langsung dipakai.</p>
   <details class="ai">
     <summary>Khusus pasien YAMET: semua gambar pakai wajah si kecil</summary>
-    <p class="hint">Dari satu foto wajah, kami buatkan <b>semua kartu kegiatan</b> dengan wajah si kecil, mengikuti gaya gambar dan kartu ibadah di langkah 1, jadi template apa pun yang dipilih langsung memakai wajahnya. Butuh kode akses dari terapis YAMET (satu kode untuk sekali buat). Prosesnya sekitar 2–3 menit, jangan tutup halaman.</p>
+    <p class="hint">Dari satu foto wajah, kami buatkan <b>semua kartu kegiatan</b> dengan wajah si kecil, mengikuti gaya gambar dan kartu ibadah di langkah 1, jadi template apa pun yang dipilih langsung memakai wajahnya. Butuh kode akses dari terapis YAMET (satu kode untuk sekali buat). Prosesnya sekitar 3–4 menit, jangan tutup halaman.</p>
     <p class="hint">Demi keamanan foto anak, kartu <b>mandi</b> dan <b>ke toilet</b> pada gaya foto realistis tetap memakai foto benda (gayung, sabun, kloset), tanpa sosok anak. <b>Kartu ibadah</b> juga tetap memakai gambar bawaan supaya gerakan dan pakaian ibadahnya benar.</p>
     <p class="hint">Kalau si kecil berjilbab, periksa kartunya. Bila ada rambut yang terlihat, ketuk kartu itu lalu pilih "Pakai gambar bawaan".</p>
     <label for="kode">Kode akses</label>
@@ -186,7 +186,9 @@ footer a{color:var(--green)}
     minum_air: 'Minum air putih', dongeng: 'Dengar dongeng', tidur: 'Tidur malam',
     doa_kristen: 'Berdoa', gereja: 'Sekolah Minggu', doa_buddha: 'Berdoa', vihara: 'Sekolah Minggu',
     terapi_bt: 'Terapi BT', terapi_pss: 'Preschool Skills', terapi_wicara: 'Terapi Wicara',
-    terapi_si: 'Sensori Integrasi', terapi_fisio: 'Fisioterapi', toilet_training: 'Toilet training'
+    terapi_si: 'Sensori Integrasi', terapi_fisio: 'Fisioterapi', toilet_training: 'Toilet training',
+    snack_time: 'Snack time', cuci_tangan: 'Cuci tangan', belajar_ortu: 'Belajar bersama orang tua',
+    motorik_kasar: 'Bermain motorik kasar', jalan_pagi: 'Jalan pagi'
   };
   // satu gambar untuk beberapa kegiatan: BT, PSS, dan terapi wicara sama-sama di ruang kelas terapi
   const GAMBAR = { terapi_bt: 'terapi_kelas', terapi_pss: 'terapi_kelas', terapi_wicara: 'terapi_kelas' };
@@ -198,8 +200,8 @@ footer a{color:var(--green)}
   const T = (list) => list.map(([time, key, label]) => ({ time, key, label: label || ACTS[key] }));
   const TEMPLATES = {
     sekolah: { name: 'Hari sekolah', rows: T([['05:30','bangun'],['05:40','toilet'],['05:50','mandi'],['06:05','pakai_baju'],['06:15','sarapan'],['06:35','sikat_gigi'],['06:45','berangkat','Berangkat sekolah'],['07:00','sekolah'],['12:30','makan_siang'],['13:30','tidur_siang'],['15:30','main'],['16:30','mandi','Mandi sore'],['18:00','salat'],['18:30','makan_malam'],['19:15','belajar'],['19:45','beres_mainan'],['20:00','baju_tidur'],['20:10','sikat_gigi'],['20:20','dongeng'],['20:30','tidur']]) },
-    terapi: { name: 'Hari terapi', rows: T([['06:00','bangun'],['06:10','toilet'],['06:20','mandi'],['06:40','pakai_baju'],['07:00','sarapan'],['07:30','sikat_gigi'],['08:00','berangkat','Berangkat terapi'],['08:30','terapi_bt','Terapi di YAMET Dempo'],['12:00','makan_siang'],['13:00','tidur_siang'],['15:00','main'],['16:30','mandi','Mandi sore'],['18:30','makan_malam'],['19:45','baju_tidur'],['19:55','sikat_gigi'],['20:05','dongeng'],['20:30','tidur']]) },
-    libur: { name: 'Akhir pekan', rows: T([['06:30','bangun'],['06:40','toilet'],['07:00','mandi'],['07:30','sarapan'],['08:30','main'],['10:30','beres_mainan'],['12:00','makan_siang'],['13:00','tidur_siang'],['15:30','main','Main di luar'],['16:30','mandi','Mandi sore'],['18:30','makan_malam'],['19:45','sikat_gigi'],['20:00','dongeng'],['20:30','tidur']]) },
+    terapi: { name: 'Hari terapi', rows: T([['06:00','bangun'],['06:05','toilet_training'],['06:10','mandi','Mandi pagi'],['06:25','pakai_baju'],['06:30','sarapan'],['07:00','berangkat','Berangkat ke YAMET'],['08:00','terapi_bt','Terapi di YAMET Dempo'],['10:00','cuci_tangan'],['10:05','snack_time'],['11:00','tidur_siang'],['12:30','makan_siang'],['13:00','belajar_ortu'],['15:00','snack_time'],['15:15','motorik_kasar'],['17:30','mandi','Mandi sore'],['18:00','makan_malam'],['18:30','belajar_ortu'],['20:00','sikat_gigi'],['20:10','tidur']]) },
+    libur: { name: 'Akhir pekan', rows: T([['06:30','bangun'],['06:40','toilet'],['07:00','mandi'],['07:30','sarapan'],['08:00','jalan_pagi'],['08:30','main'],['10:30','beres_mainan'],['12:00','makan_siang'],['13:00','tidur_siang'],['15:30','main','Main di luar'],['16:30','mandi','Mandi sore'],['18:30','makan_malam'],['19:45','sikat_gigi'],['20:00','dongeng'],['20:30','tidur']]) },
     malam: { name: 'Ritual malam', rows: T([['19:30','baju_tidur'],['19:40','cuci_kaki'],['19:45','sikat_gigi'],['19:55','minum_air'],['20:00','dongeng'],['20:15','tidur']]) },
     kosong: { name: 'Mulai dari kosong', rows: [] }
   };
@@ -210,8 +212,9 @@ footer a{color:var(--green)}
     get() { try { return JSON.parse(localStorage.getItem('yamet-jadwal') || 'null'); } catch (e) { return null; } },
     set() { try { localStorage.setItem('yamet-jadwal', JSON.stringify({ name: state.name, gender: state.gender, style: state.style, agama: state.agama, template: state.template, rows: state.rows.map(r => ({ time: r.time, key: r.key, label: r.label })) })); } catch (e) { /* tidak apa-apa */ } }
   };
-  // kunci gambar: dongeng memakai versi ayah untuk selain Islam; beberapa terapi berbagi satu gambar
-  const imgKey = (k) => (k === 'dongeng' && state.agama !== 'islam') ? 'dongeng_ayah' : (GAMBAR[k] || k);
+  // kunci gambar: dongeng & belajar bersama orang tua memakai versi ayah untuk selain Islam; beberapa terapi berbagi satu gambar
+  const AYAH = { dongeng: 'dongeng_ayah', belajar_ortu: 'belajar_ortu_ayah' }; // selain Islam: ayah yang menemani
+  const imgKey = (k) => (AYAH[k] && state.agama !== 'islam') ? AYAH[k] : (GAMBAR[k] || k);
   const iconUrl = (key) => (state.style === 'kartun' || SELALU_KARTUN.includes(key) ? ICON_BASE : FOTO_BASE) + imgKey(key) + '-' + state.gender + '.jpg';
   const aiFor = (r) => (!r.plain && state.ai[imgKey(r.key)]) || null;
   const imgFor = (r) => r.own || aiFor(r) || iconUrl(r.key);

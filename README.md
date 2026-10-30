@@ -39,6 +39,10 @@ Reels: MP4 H.264 + AAC, 9:16, 3 detik–15 menit.
   Sensori Integrasi `terapi_si` (ruang SI YAMET), Fisioterapi `terapi_fisio`. Foto dibuat dengan
   Higgsfield Seedream 5.0 Flash, kartunnya dengan MiniMax image-01.
 - Toilet training (`toilet_training`) selalu memakai gambar kartun (MiniMax), juga di gaya foto.
+- Kegiatan harian dari jadwal anak terapi YAMET: `snack_time`, `cuci_tangan`, `belajar_ortu`
+  (bermain dan belajar bersama ibu; untuk Kristen/Buddha memakai `belajar_ortu_ayah`), `motorik_kasar`,
+  `jalan_pagi`. Fotonya dibuat dengan Higgsfield Seedream 5.0 Flash, kartunnya dengan MiniMax image-01.
+  Template "Hari terapi" mengikuti jadwal harian anak yang terapi pagi di YAMET.
 - Kartu bergambar wajah anak dibuat lewat `POST /webhook/jadwal/buat` (butuh kode akses sekali pakai):
   semua kegiatan sekaligus dengan MiniMax image-01, mengikuti gaya yang dipilih (foto realistis atau kartun).
   Pada gaya realistis, kartu mandi dan ke toilet tetap memakai gambar bawaan berisi benda, tanpa anak.

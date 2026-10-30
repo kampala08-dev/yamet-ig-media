@@ -28,6 +28,8 @@ Reels: MP4 H.264 + AAC, 9:16, 3 detik–15 menit.
   di `https://n8n-hc8x.srv2014501.hstgr.cloud/webhook/jadwal`. PDF-nya berisi papan jadwal tiga
   halaman menurut jam (pagi sebelum 11.00, siang 11.00–17.59, malam mulai 18.00; lebih dari 12
   kegiatan dalam satu bagian berlanjut ke halaman berikutnya), lalu halaman kartu untuk digunting.
+  Daftar kegiatan di halaman selalu urut menurut jam (hari dihitung mulai 04.00): begitu jam diubah,
+  kegiatan pindah ke tempatnya; tombol naik/turun hanya muncul untuk kegiatan yang jamnya sama.
   Foto ayah & ibu (opsional) tampil di judul papan. Saat membuat kartu wajah, foto itu ikut dikirim
   ke MiniMax sehingga kartu belajar bersama orang tua dan dengar dongeng memakai wajah ayah/ibu
   (si kecil tampak dari belakang, karena MiniMax hanya menerima satu wajah acuan per gambar).

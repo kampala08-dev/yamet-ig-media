@@ -62,6 +62,9 @@ input:focus{outline:3px solid rgba(23,97,74,.25);border-color:var(--green)}
 .tools{display:flex;flex-direction:column;gap:4px}
 .icon-btn{width:34px;height:30px;border-radius:8px;border:1.5px solid var(--line);background:#fff;cursor:pointer;font-size:14px;color:var(--ink);display:grid;place-items:center}
 .icon-btn.del{color:var(--danger)}
+.row.pindah{animation:pindah 1.6s ease-out}
+@keyframes pindah{0%,35%{box-shadow:0 0 0 3px var(--green);background:#fff}100%{box-shadow:0 0 0 3px rgba(23,97,74,0)}}
+@media (prefers-reduced-motion:reduce){.row.pindah{animation:none;box-shadow:0 0 0 3px var(--green)}}
 .add-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:10px}
 .add-grid button{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:6px;cursor:pointer;font:inherit;font-size:12px;font-weight:600;color:var(--ink)}
 .add-grid img{width:100%;aspect-ratio:1;border-radius:8px;object-fit:cover;display:block;margin-bottom:4px}
@@ -153,7 +156,7 @@ footer a{color:var(--green)}
 
 <section aria-labelledby="h-daftar">
   <h2 id="h-daftar"><span class="num">3</span>Atur kegiatan &amp; jam</h2>
-  <p class="hint">Ketuk gambar untuk menggantinya dengan foto asli (misalnya sikat gigi milik si kecil). Foto nyata sering lebih mudah dipahami anak.</p>
+  <p class="hint">Urutannya otomatis mengikuti jam: begitu jam diubah, kegiatan pindah ke tempatnya. Ketuk gambar untuk menggantinya dengan foto asli (misalnya sikat gigi milik si kecil). Foto nyata sering lebih mudah dipahami anak.</p>
   <ol class="rows" id="rows"></ol>
   <div class="actions"><button type="button" class="btn alt" id="btn-tambah">+ Tambah kegiatan</button></div>
 </section>
@@ -306,6 +309,45 @@ footer a{color:var(--green)}
     $('#emosi-ket').textContent = { L: 'anak laki-laki', P: 'anak perempuan', 'P-jilbab': 'anak perempuan berjilbab' }[emosiVarian()];
   }
   const fmtTime = (t) => (t || '').replace(':', '.');
+  // menit sejak jam 04.00, supaya kegiatan lewat tengah malam tetap urut di akhir hari
+  const menit = (t) => { const m = /^(\d{1,2}):(\d{2})/.exec(t || ''); return m ? ((+m[1] + 20) % 24) * 60 + +m[2] : null; };
+  // kunci urut tiap baris: kegiatan tanpa jam ikut tepat sesudah kegiatan sebelumnya
+  function kunciUrut(rows) { let prev = -1; return rows.map(r => { const v = menit(r.time); if (v !== null) prev = v; return prev; }); }
+  // urutkan daftar menurut jam; jam sama tetap sesuai urutan sekarang. Hasil: true bila ada yang pindah.
+  function urutkan() {
+    const k = kunciUrut(state.rows);
+    const baru = state.rows.map((r, i) => i).sort((a, b) => k[a] - k[b] || a - b).map(i => state.rows[i]);
+    const pindah = baru.some((r, i) => r !== state.rows[i]);
+    state.rows = baru;
+    return pindah;
+  }
+  function sorot(r) {
+    const li = $('#rows').children[state.rows.indexOf(r)];
+    if (!li) return;
+    const pelan = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    li.scrollIntoView({ behavior: pelan ? 'auto' : 'smooth', block: 'center' });
+    li.classList.add('pindah'); setTimeout(() => li.classList.remove('pindah'), 1600);
+  }
+  // tombol naik/turun hanya untuk kegiatan yang jamnya sama dengan tetangganya
+  function perbaruiPanah() {
+    const kunci = kunciUrut(state.rows), lis = $('#rows').querySelectorAll('li.row');
+    state.rows.forEach((r, i) => {
+      if (!lis[i]) return;
+      lis[i].querySelector('[data-act=up]').hidden = !(i > 0 && kunci[i - 1] === kunci[i]);
+      lis[i].querySelector('[data-act=down]').hidden = !(i < state.rows.length - 1 && kunci[i + 1] === kunci[i]);
+    });
+  }
+  // dipanggil setelah jam suatu kegiatan diubah: susun ulang daftar, lalu tunjukkan posisi barunya
+  function rapikan(r, tujuan) {
+    let fokus = null;
+    if (tujuan && $('#rows').contains(tujuan) && tujuan.matches('input')) {
+      const li = tujuan.closest('li.row');
+      fokus = { row: state.rows[[...$('#rows').children].indexOf(li)], sel: tujuan.type === 'time' ? 'input[type=time]' : 'input[type=text]' };
+    }
+    if (!urutkan()) { perbaruiPanah(); return; }
+    store.set(); render(); sorot(r);
+    if (fokus && fokus.row) { const li = $('#rows').children[state.rows.indexOf(fokus.row)]; if (li) li.querySelector(fokus.sel).focus({ preventScroll: true }); }
+  }
   const actsTampil = () => Object.keys(ACTS).filter(k => !IBADAH_SEMUA.includes(k) || IBADAH[state.agama].includes(k));
   function pakaiAgama(agama) {
     state.rows.forEach(r => {
@@ -329,18 +371,23 @@ footer a{color:var(--green)}
       li.textContent = 'Belum ada kegiatan. Ketuk "+ Tambah kegiatan".';
       ol.appendChild(li);
     }
+    // urutan mengikuti jam; tombol naik/turun hanya muncul untuk kegiatan yang jamnya sama
+    const kunci = kunciUrut(state.rows);
     state.rows.forEach((r, i) => {
       const li = document.createElement('li');
       li.className = 'row';
       const tag = tagFor(r);
+      const naik = i > 0 && kunci[i - 1] === kunci[i], turun = i < state.rows.length - 1 && kunci[i + 1] === kunci[i];
       li.innerHTML =
         '<button type="button" class="thumb" aria-label="Ganti gambar ' + escapeHtml(r.label) + '"><img alt="" src="' + imgFor(r) + '">' + (tag ? '<span class="tag">' + tag + '</span>' : '') + '</button>' +
         '<div class="fields"><input type="time" aria-label="Jam" value="' + r.time + '"><input type="text" aria-label="Nama kegiatan" maxlength="28" value="' + escapeHtml(r.label) + '"></div>' +
-        '<div class="tools"><button type="button" class="icon-btn" data-act="up" aria-label="Naikkan">▲</button><button type="button" class="icon-btn" data-act="down" aria-label="Turunkan">▼</button><button type="button" class="icon-btn del" data-act="del" aria-label="Hapus">✕</button></div>';
+        '<div class="tools"><button type="button" class="icon-btn" data-act="up" aria-label="Naikkan"' + (naik ? '' : ' hidden') + '>▲</button><button type="button" class="icon-btn" data-act="down" aria-label="Turunkan"' + (turun ? '' : ' hidden') + '>▼</button><button type="button" class="icon-btn del" data-act="del" aria-label="Hapus">✕</button></div>';
       const im = li.querySelector('img');
       im.addEventListener('error', () => { im.src = placeholder(r.label); }, { once: true });
       const [tIn, lIn] = li.querySelectorAll('input');
-      tIn.addEventListener('change', () => { r.time = tIn.value; store.set(); });
+      // susun ulang saat kolom jam ditinggalkan, supaya baris tidak melompat saat jam masih diketik
+      tIn.addEventListener('change', () => { r.time = tIn.value; store.set(); if (document.activeElement !== tIn) rapikan(r); });
+      tIn.addEventListener('blur', (e) => { r.time = tIn.value; rapikan(r, e.relatedTarget); });
       lIn.addEventListener('input', () => { r.label = lIn.value; store.set(); });
       li.querySelector('.thumb').addEventListener('click', () => openGanti(i));
       li.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () => {
@@ -364,7 +411,7 @@ footer a{color:var(--green)}
       b.setAttribute('aria-pressed', String(k === state.template));
       b.addEventListener('click', () => {
         if (state.rows.length && !confirm('Ganti ke template "' + t.name + '"? Daftar kegiatan sekarang akan diganti.')) return;
-        state.template = k; state.rows = t.rows.map(r => Object.assign({}, r)); pakaiAgama(state.agama); store.set(); renderTemplates(); render();
+        state.template = k; state.rows = t.rows.map(r => Object.assign({}, r)); pakaiAgama(state.agama); urutkan(); store.set(); renderTemplates(); render();
       });
       box.appendChild(b);
     });
@@ -379,9 +426,10 @@ footer a{color:var(--green)}
       b.innerHTML = '<img alt="" loading="lazy" src="' + (state.ai[imgKey(k)] || iconUrl(k)) + '">' + label;
       b.addEventListener('click', () => {
         const last = state.rows[state.rows.length - 1];
-        state.rows.push({ time: last ? last.time : '07:00', key: k, label });
+        const baru = { time: last ? last.time : '07:00', key: k, label };
+        state.rows.push(baru); urutkan();
         store.set(); render(); closeSheets();
-        setTimeout(() => { const items = document.querySelectorAll('.row'); if (items.length) items[items.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50);
+        setTimeout(() => sorot(baru), 50);
       });
       g.appendChild(b);
     });
@@ -582,8 +630,6 @@ footer a{color:var(--green)}
     const tplName = (TEMPLATES[state.template] || {}).name || 'Jadwal harian';
     const NAMA_BAGIAN = ['Pagi', 'Siang', 'Malam'];
     const lh = (pt) => pt * 0.3528 * 1.2; // tinggi satu baris teks (mm) untuk ukuran huruf pt
-    // menit sejak jam 04.00, supaya kegiatan lewat tengah malam tetap urut di bagian malam
-    const menit = (t) => { const m = /^(\d{1,2}):(\d{2})/.exec(t || ''); return m ? ((+m[1] + 20) % 24) * 60 + +m[2] : null; };
     const bagianDari = (t) => { const v = menit(t); return v === null ? null : (v < 7 * 60 ? 0 : (v < 14 * 60 ? 1 : 2)); }; // pagi 04.00-10.59, siang 11.00-17.59, malam 18.00-03.59
     function ikon(k, cx, cy) {
       const sinar = (ox, oy, r1, r2, sudut) => {
@@ -758,6 +804,7 @@ footer a{color:var(--green)}
   } else {
     state.rows = TEMPLATES.sekolah.rows.map(r => Object.assign({}, r));
   }
+  if (urutkan()) store.set(); // daftar lama yang belum urut jam ikut dirapikan
   renderTemplates(); render(); renderUrutan(); renderEmosi();
 })();
 </script>

@@ -72,9 +72,20 @@ Reels: MP4 H.264 + AAC, 9:16, 3 detik–15 menit.
   Higgsfield GPT Image 2.5 dari `tata-letak-papan-emosi.png` (tata letak teks saja) dan anak acuan yang sama
   dengan kartu foto. Halaman memilih versinya otomatis: laki-laki, perempuan, atau perempuan berjilbab bila
   agamanya Islam. Bila dicentang, papan ini menjadi halaman A4 mendatar di akhir PDF.
-- Kartu bergambar wajah anak dibuat lewat `POST /webhook/jadwal/buat` (butuh kode akses sekali pakai):
-  semua kegiatan sekaligus dengan MiniMax image-01, mengikuti gaya yang dipilih (foto realistis atau kartun);
+- Kartu bergambar wajah anak dibuat lewat `POST /webhook/jadwal/buat` (butuh kode akses sekali pakai dan email
+  orang tua): semua kegiatan sekaligus dengan MiniMax image-01, mengikuti gaya yang dipilih (foto realistis atau kartun);
   kegiatan tambahan hanya bila ada di jadwal.
   Pada gaya realistis, kartu mandi dan ke toilet tetap memakai gambar bawaan berisi benda, tanpa anak.
   Kartu ibadah selalu memakai gambar bawaan (MiniMax belum bisa menjamin gerakan ibadah dan jilbab yang benar).
-  Foto anak tidak disimpan di repo ini maupun di riwayat n8n.
+- Antrean & email (workflow n8n **24** dan **25**): permintaan langsung dijawab `{token, posisi, perkiraan}` lalu menunggu
+  giliran di Data Table *Antrean Jadwal Bergambar*. Satu permintaan diproses dalam satu waktu karena MiniMax dibatasi
+  ~10 gambar/menit; maksimal 6 permintaan aktif, 900 kartu per 24 jam, menyerah (email maaf, kode tetap berlaku) bila
+  antre lebih dari 45 menit; satu kode tidak bisa dipakai dua permintaan sekaligus. Kartu yang jadi dan isian jadwal (tanpa
+  foto) disimpan sementara di Data Table *Hasil Kartu Jadwal*, lalu link `https://jadwal.yametpalembang.io/?hasil=<token>`
+  dikirim dari `admin@yametpalembang.io` (alias kotak riokampala@, kredensial SMTP n8n "SMTP YAMET admin").
+  Halaman yang tetap dibuka mengecek status lewat `POST /webhook/jadwal/hasil` `{token, aksi: cek|ambil|hapus}` dan
+  memasukkan kartu sendiri; link email juga memulihkan jadwal bila dibuka di HP/browser lain. Setelah kartu tersimpan di
+  HP (IndexedDB, bisa dihapus dengan tombol "Hapus kartu wajah dari HP ini"), salinan di server langsung dihapus;
+  pembersihan tiap jam di workflow 25 menghapus sisa kartu dan antrean yang lebih dari 3 hari dan menandai permintaan
+  yang terhenti (email maaf). Foto anak tidak disimpan di repo ini, di Data Table, maupun di riwayat n8n (riwayat
+  eksekusi kedua workflow dimatikan; foto hanya ada di memori eksekusi selama antre).

@@ -26,7 +26,7 @@ section h2{font-size:18px;display:flex;gap:10px;align-items:center}
 .num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--yellow);color:var(--green);font-size:14px;flex:none}
 .hint{color:var(--muted);font-size:14px;margin:6px 0 12px}
 label{font-weight:600;font-size:14px;display:block;margin:12px 0 6px}
-input[type=text],input[type=time],input[type=password],input[type=email]{font:inherit;width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+input[type=text],input[type=time]{font:inherit;width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
 input:focus{outline:3px solid rgba(23,97,74,.25);border-color:var(--green)}
 .seg{display:flex;gap:8px;flex-wrap:wrap}
 .seg button,.chip{font:inherit;font-weight:600;font-size:14px;border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:8px 14px;cursor:pointer}
@@ -68,19 +68,13 @@ input:focus{outline:3px solid rgba(23,97,74,.25);border-color:var(--green)}
 .add-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:10px}
 .add-grid button{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:6px;cursor:pointer;font:inherit;font-size:12px;font-weight:600;color:var(--ink)}
 .add-grid img{width:100%;aspect-ratio:1;border-radius:8px;object-fit:cover;display:block;margin-bottom:4px}
-details.ai{border:2px solid var(--yellow);border-radius:14px;padding:0 14px}
-details.ai summary{cursor:pointer;font-weight:700;padding:14px 0;color:var(--green)}
-.consent{display:flex;gap:10px;align-items:flex-start;font-size:14px;font-weight:500;margin:12px 0}
-.consent input{margin-top:4px;width:18px;height:18px;flex:none}
+.langkah{margin:0 0 12px;padding-left:20px;font-size:14px}
+.langkah li{margin:4px 0}
+a.btn{text-decoration:none}
 .status{font-size:14px;margin-top:10px;color:var(--muted);min-height:20px}
 .status.err{color:var(--danger)}
 .status.ok{color:var(--green);font-weight:600}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-.banner{position:relative;background:var(--green-soft);border:2px solid var(--green);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;font-size:15px;font-weight:500}
-.banner.err{background:#FCE8E6;border-color:var(--danger)}
-.banner .actions{margin-top:10px}
-.tersimpan{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--green-soft);border-radius:12px;padding:10px 12px;margin-top:12px;font-size:14px}
-.tersimpan .btn{margin-top:0}
 .sheet{position:fixed;inset:0;background:rgba(30,42,36,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
 .sheet.open{display:flex}
 .sheet .panel{background:#fff;width:100%;max-width:760px;max-height:85vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px}
@@ -100,7 +94,6 @@ footer a{color:var(--green)}
 </div></header>
 
 <main>
-<div class="banner" id="banner" role="status" aria-live="polite" hidden></div>
 <section aria-labelledby="h-anak">
   <h2 id="h-anak"><span class="num">1</span>Data si kecil</h2>
   <label for="nama">Nama panggilan</label>
@@ -132,7 +125,7 @@ footer a{color:var(--green)}
     </div>
   </div>
   <label>Foto ayah &amp; ibu (opsional)</label>
-  <p class="hint" style="margin:0 0 10px">Tampil di judul papan. Saat membuat kartu wajah di langkah 4, kartu <b>belajar bersama orang tua</b> dan <b>dengar dongeng</b> memakai wajah ayah/ibu dari foto ini (si kecil tampak dari belakang). Ketuk kartunya untuk memilih bersama ayah atau ibu. Foto hanya dikirim ke AI saat membuat kartu wajah.</p>
+  <p class="hint" style="margin:0 0 10px">Tampil di judul papan. Foto ini hanya diproses di HP Mama Papa, tidak dikirim ke mana pun.</p>
   <div class="ortu-row">
     <div class="ortu">
       <div class="avatar kecil" id="avatar-ayah" aria-hidden="true"></div>
@@ -167,33 +160,8 @@ footer a{color:var(--green)}
   <div class="actions"><button type="button" class="btn alt" id="btn-tambah">+ Tambah kegiatan</button></div>
 </section>
 
-<section aria-labelledby="h-ai">
-  <h2 id="h-ai"><span class="num">4</span>Kartu bergambar si kecil</h2>
-  <p class="hint">Opsional. Gambar bawaan di atas sudah bisa langsung dipakai.</p>
-  <details class="ai">
-    <summary>Khusus pasien YAMET: semua gambar pakai wajah si kecil</summary>
-    <p class="hint">Dari satu foto wajah, kami buatkan <b>semua kartu kegiatan</b> dengan wajah si kecil, mengikuti gaya gambar dan kartu ibadah di langkah 1, jadi template apa pun yang dipilih langsung memakai wajahnya. Kegiatan tambahan (berenang, les piano, ekstrakurikuler, bela diri) ikut dibuat bila sudah ada di jadwal. Butuh kode akses dari terapis YAMET (satu kode untuk sekali buat).</p>
-    <p class="hint">Kartu dibuat bergiliran di server YAMET, biasanya 3–5 menit (lebih lama bila sedang ramai). Halaman ini boleh ditutup: begitu jadi, link hasilnya kami kirim ke email Mama/Papa. Kalau halaman tetap dibuka, kartu langsung masuk sendiri.</p>
-    <p class="hint">Demi keamanan foto anak, kartu <b>mandi</b> dan <b>ke toilet</b> pada gaya foto realistis tetap memakai foto benda (gayung, sabun, kloset), tanpa sosok anak. <b>Kartu ibadah</b> juga tetap memakai gambar bawaan supaya gerakan dan pakaian ibadahnya benar.</p>
-    <p class="hint">Kalau foto ayah/ibu diisi di langkah 1, kartu belajar bersama orang tua dan dengar dongeng memakai wajah ayah/ibu, dengan si kecil tampak dari belakang.</p>
-    <p class="hint">Kalau si kecil atau ibu berjilbab, periksa kartunya. Bila ada rambut yang terlihat, ketuk kartu itu lalu pilih "Pakai gambar bawaan".</p>
-    <label for="kode">Kode akses</label>
-    <input id="kode" type="password" autocomplete="off" placeholder="Contoh: JDW-XXXXX">
-    <label for="foto-wajah">Foto wajah si kecil</label>
-    <input id="foto-wajah" type="file" accept="image/*">
-    <p class="hint">Pakai foto terang, wajah menghadap depan, tanpa orang lain.</p>
-    <label for="email-ortu">Email Mama/Papa</label>
-    <input id="email-ortu" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="Contoh: mama.raka@gmail.com">
-    <p class="hint">Link hasil kartu dikirim ke email ini.</p>
-    <label class="consent"><input type="checkbox" id="setuju"><span>Saya orang tua/wali anak ini. Saya setuju foto si kecil (dan foto ayah/ibu bila diisi) dikirim ke layanan AI (MiniMax) hanya untuk membuat kartu ini. Foto asli tidak disimpan. Kartu yang sudah jadi dan isian jadwal (tanpa foto) disimpan sementara di server YAMET supaya bisa diambil lewat link email, lalu dihapus begitu diambil atau paling lama 3 hari.</span></label>
-    <button type="button" class="btn full" id="btn-ai">Buat kartu bergambar</button>
-    <div class="status" id="ai-status" role="status" aria-live="polite"></div>
-  </details>
-  <div class="tersimpan" id="ai-tersimpan" hidden><span id="ai-tersimpan-ket"></span><button type="button" class="btn ghost kecil" id="btn-hapus-ai">Hapus kartu wajah dari HP ini</button></div>
-</section>
-
 <section aria-labelledby="h-unduh">
-  <h2 id="h-unduh"><span class="num">5</span>Unduh &amp; cetak</h2>
+  <h2 id="h-unduh"><span class="num">4</span>Unduh &amp; cetak</h2>
   <p class="hint">PDF A4: papan jadwal dibagi tiga halaman menurut jam, yaitu <b>pagi</b> (sebelum 11.00), <b>siang</b> (11.00–17.59), dan <b>malam</b> (mulai 18.00), dengan gambar besar dan kotak centang. Halaman berikutnya berisi kartu untuk digunting dan ditempel (pakai perekat/velcro supaya bisa dipindah).</p>
   <label>Kartu urutan langkah (opsional)</label>
   <p class="hint" style="margin:0 0 8px">Ditambahkan di akhir PDF: satu halaman per kegiatan, berisi kartu langkah bernomor dan tabel centang Senin–Minggu. Langkahnya mengikuti lembar latihan terapis YAMET.</p>
@@ -205,6 +173,19 @@ footer a{color:var(--green)}
   <a class="tautan-kecil" id="emosi-jpg" href="https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/emosi/kartu-aac-emosi-L.jpg" target="_blank" rel="noopener">Buka gambar papan emosi saja (JPG)</a>
   <button type="button" class="btn full" id="btn-pdf">Unduh PDF jadwal</button>
   <div class="status" id="pdf-status" role="status" aria-live="polite"></div>
+</section>
+
+<section aria-labelledby="h-wajah">
+  <h2 id="h-wajah"><span class="num">5</span>Kartu dengan wajah si kecil</h2>
+  <p class="hint">Opsional, <b>khusus pasien YAMET</b>. Gambar bawaan di atas sudah bisa langsung dipakai. Kalau ingin kartu kegiatan dan papan emosi memakai wajah si kecil, admin YAMET yang membuatkan.</p>
+  <ol class="langkah">
+    <li>Unduh PDF jadwal di langkah 4.</li>
+    <li>Ketuk tombol di bawah untuk chat admin lewat WhatsApp. Pesannya sudah berisi ringkasan jadwal.</li>
+    <li>Lampirkan <b>PDF jadwal</b> tadi dan <b>satu foto wajah si kecil</b> (terang, menghadap depan, tanpa orang lain).</li>
+    <li>Admin mengirim balik PDF jadwal dengan wajah si kecil.</li>
+  </ol>
+  <p class="hint">Foto hanya dipakai untuk membuat kartu si kecil (dibuat dengan bantuan AI).</p>
+  <a class="btn full" id="btn-wa" href="https://wa.me/6285212188897" target="_blank" rel="noopener">Kirim foto ke admin lewat WhatsApp</a>
 </section>
 </main>
 
@@ -236,11 +217,8 @@ footer a{color:var(--green)}
 <script>
 (function () {
   'use strict';
-  const ENDPOINT = 'https://n8n-hc8x.srv2014501.hstgr.cloud/webhook/jadwal/buat';
-  // hasil kartu wajah: { token, aksi: 'cek' | 'ambil' | 'hapus' } (workflow n8n 25)
-  const HASIL = 'https://n8n-hc8x.srv2014501.hstgr.cloud/webhook/jadwal/hasil';
-  const TOKEN_OK = /^[a-f0-9]{32}$/;
-  const KUNCI_TUNGGU = 'yamet-jadwal-tunggu', KUNCI_EMAIL = 'yamet-jadwal-email';
+  // kartu dengan wajah si kecil dibuat admin YAMET: orang tua mengirim PDF + foto lewat WhatsApp
+  const WA_ADMIN = '6285212188897';
   // Di GitHub Pages (jadwal.yametpalembang.io) gambar diambil dari situsnya sendiri; di tempat lain dari repo GitHub.
   const DI_PAGES = /^jadwal\.yametpalembang\.io$|\.github\.io$/.test(location.hostname);
   const ASAL = DI_PAGES ? new URL('./', location.href).href : 'https://raw.githubusercontent.com/kampala08-dev/yamet-ig-media/main/jadwal/';
@@ -266,7 +244,6 @@ footer a{color:var(--green)}
   // "bermain bersama orang tua" memakai gambar bermain, ditambah foto ayah/ibu bila ada
   const GAMBAR = { terapi_bt: 'terapi_kelas', terapi_pss: 'terapi_kelas', terapi_wicara: 'terapi_kelas', main_ortu: 'main' };
   const SELALU_KARTUN = ['toilet_training']; // toilet training selalu memakai gambar kartun
-  const TANPA_AI = ['toilet_training'];
   // kartu ibadah per agama; urutannya berpasangan (doa harian, lalu kegiatan rohani)
   const IBADAH = { islam: ['salat', 'mengaji'], kristen: ['doa_kristen', 'gereja'], buddha: ['doa_buddha', 'vihara'] };
   const IBADAH_SEMUA = Object.values(IBADAH).flat();
@@ -286,31 +263,13 @@ footer a{color:var(--green)}
     kosong: { name: 'Mulai dari kosong', rows: [] }
   };
 
-  const state = { name: '', gender: 'L', template: 'sekolah', rows: [], boardPhoto: null, ortu: { ayah: null, ibu: null }, ortuAI: { ayah: null, ibu: null }, urutan: [], emosi: false, ai: {}, style: 'real', agama: 'islam' };
+  const state = { name: '', gender: 'L', template: 'sekolah', rows: [], boardPhoto: null, ortu: { ayah: null, ibu: null }, urutan: [], emosi: false, ai: {}, style: 'real', agama: 'islam' };
   const $ = (s) => document.querySelector(s);
-  // isian jadwal tanpa foto: disimpan di browser (autosave) dan ikut dikirim saat membuat kartu wajah,
-  // supaya link di email bisa memulihkan jadwal bila dibuka di HP/browser lain
+  // isian jadwal tanpa foto: disimpan di browser (autosave)
   const simpanan = () => ({ name: state.name, gender: state.gender, style: state.style, agama: state.agama, template: state.template, urutan: state.urutan, emosi: state.emosi, rows: state.rows.map(r => ({ time: r.time, key: r.key, label: r.label, ortu: r.ortu })) });
   const store = {
     get() { try { return JSON.parse(localStorage.getItem('yamet-jadwal') || 'null'); } catch (e) { return null; } },
     set() { try { localStorage.setItem('yamet-jadwal', JSON.stringify(simpanan())); } catch (e) { /* tidak apa-apa */ } }
-  };
-  const lokal = {
-    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
-    set(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { /* tidak apa-apa */ } }
-  };
-  // kartu wajah AI disimpan di IndexedDB HP ini (terlalu besar untuk localStorage); bisa dihapus dengan tombol di langkah 4
-  const kartuHP = {
-    buka() { return new Promise((res, rej) => { const q = indexedDB.open('yamet-jadwal', 1); q.onupgradeneeded = () => q.result.createObjectStore('kartu'); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }); },
-    async pakai(mode, fn) {
-      const db = await this.buka();
-      try {
-        return await new Promise((res, rej) => { const tx = db.transaction('kartu', mode); const q = fn(tx.objectStore('kartu')); tx.oncomplete = () => res(q && q.result); tx.onerror = tx.onabort = () => rej(tx.error); });
-      } finally { db.close(); }
-    },
-    simpan(ai) { return this.pakai('readwrite', s => s.put({ ai, waktu: Date.now() }, 'ai')).then(() => true, () => false); },
-    ambil() { return this.pakai('readonly', s => s.get('ai')).then(v => (v && v.ai && typeof v.ai === 'object') ? v.ai : null, () => null); },
-    hapus() { return this.pakai('readwrite', s => s.delete('ai')).then(() => true, () => false); }
   };
   // kunci gambar: dongeng & belajar bersama orang tua memakai versi ayah untuk selain Islam (atau bila hanya foto ayah
   // yang diunggah; sebaliknya versi ibu bila hanya foto ibu); beberapa terapi berbagi satu gambar
@@ -509,23 +468,6 @@ footer a{color:var(--green)}
     c.getContext('2d').drawImage(im, (im.naturalWidth - s) / 2, (im.naturalHeight - s) / 2, s, s, 0, 0, size, size);
     return c.toDataURL('image/jpeg', 0.88);
   }
-  async function scaledImage(file, max) {
-    const im = await fileToImg(file);
-    const k = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight));
-    const c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
-    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
-    return c.toDataURL('image/jpeg', 0.88);
-  }
-  async function cropCard(dataUrl) {
-    // buang 6% tepi (tempat model kadang menaruh tanda kecil), lalu kecilkan ke 512px
-    try {
-      const im = await loadImg(dataUrl);
-      const m = Math.round(im.naturalWidth * 0.06), s = im.naturalWidth - 2 * m;
-      const c = document.createElement('canvas'); c.width = c.height = 512;
-      c.getContext('2d').drawImage(im, m, m, s, s, 0, 0, 512, 512);
-      return c.toDataURL('image/jpeg', 0.9);
-    } catch (e) { return dataUrl; }
-  }
   async function circleImage(dataUrl, size) {
     const im = await loadImg(dataUrl);
     const c = document.createElement('canvas'); c.width = c.height = size;
@@ -577,7 +519,7 @@ footer a{color:var(--green)}
   $('#btn-hapus-foto').addEventListener('click', () => {
     state.boardPhoto = null; const a = $('#avatar'); a.style.backgroundImage = ''; a.classList.remove('has'); $('#btn-hapus-foto').hidden = true;
   });
-  // foto ayah & ibu: hanya disimpan di memori halaman; dikirim ke MiniMax hanya saat membuat kartu wajah (langkah 4)
+  // foto ayah & ibu: hanya disimpan di memori halaman (judul papan)
   const tampilOrtu = (o) => {
     const a = $('#avatar-' + o), u = state.ortu[o];
     a.style.backgroundImage = u ? 'url(' + u + ')' : ''; a.classList.toggle('has', !!u);
@@ -589,9 +531,9 @@ footer a{color:var(--green)}
     $('#foto-' + o).addEventListener('change', async e => {
       const f = e.target.files[0]; e.target.value = '';
       if (!f) return;
-      state.ortu[o] = await squareImage(f, 480); state.ortuAI[o] = await scaledImage(f, 768); tampilOrtu(o);
+      state.ortu[o] = await squareImage(f, 480); tampilOrtu(o);
     });
-    document.querySelector('[data-hapus="' + o + '"]').addEventListener('click', () => { state.ortu[o] = null; state.ortuAI[o] = null; tampilOrtu(o); });
+    document.querySelector('[data-hapus="' + o + '"]').addEventListener('click', () => { state.ortu[o] = null; tampilOrtu(o); });
   });
 
   document.querySelectorAll('#agama button').forEach(b => b.addEventListener('click', () => {
@@ -605,141 +547,18 @@ footer a{color:var(--green)}
     store.set(); render(); renderUrutan();
   }));
 
-  // AI: permintaan masuk antrean di n8n dan langsung dijawab {token, posisi, perkiraan}. Kartu diambil halaman ini bila tetap
-  // dibuka (cek status berkala), atau lewat link ?hasil=<token> di email. Setelah tersimpan di HP, salinan di server dihapus.
-  const DATA_GAMBAR = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
-  let tunggu = null, timerPantau = null;
-  const tampilStatus = (teks, jenis) => { const st = $('#ai-status'); st.className = 'status' + (jenis ? ' ' + jenis : ''); st.textContent = teks; };
-  function tampilBanner(teks, salah, tombol) {
-    const b = $('#banner'); b.hidden = false; b.className = 'banner' + (salah ? ' err' : ''); b.textContent = teks;
-    if (!tombol) return;
-    const a = document.createElement('div'); a.className = 'actions';
-    const pdf = document.createElement('button'); pdf.type = 'button'; pdf.className = 'btn'; pdf.textContent = 'Unduh PDF jadwal';
-    pdf.addEventListener('click', () => $('#btn-pdf').click());
-    const lihat = document.createElement('button'); lihat.type = 'button'; lihat.className = 'btn ghost'; lihat.textContent = 'Lihat jadwal';
-    lihat.addEventListener('click', () => $('#h-daftar').scrollIntoView({ block: 'start' }));
-    a.append(pdf, lihat); b.appendChild(a);
+  // WhatsApp admin: pesan berisi ringkasan jadwal; PDF dan foto dilampirkan orang tua sendiri
+  function pesanWA() {
+    const AGAMA = { islam: 'Islam', kristen: 'Kristen', buddha: 'Buddha' };
+    const baris = state.rows.map(r => (r.time ? r.time.replace(':', '.') + ' ' : '') + (r.label || ACTS[r.key]));
+    return 'Halo Admin YAMET, saya ingin dibuatkan jadwal bergambar dengan wajah si kecil.\n\n' +
+      'Nama: ' + (state.name || '-') + '\n' +
+      'Gambar: anak ' + (state.gender === 'P' ? 'perempuan' : 'laki-laki') + ', ' + (state.style === 'kartun' ? 'kartun' : 'foto realistis') + ', kartu ibadah ' + AGAMA[state.agama] + '\n' +
+      'Papan emosi: ' + (state.emosi ? 'ya' : 'tidak') + '\n\n' +
+      'Jadwal:\n' + (baris.length ? baris.join('\n') : '-') + '\n\n' +
+      'Saya lampirkan PDF jadwal dan satu foto wajah si kecil.';
   }
-  const tanggal = (ms) => new Date(ms).toLocaleString('id-ID', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
-  const simpanTunggu = (t) => { tunggu = t; lokal.set(KUNCI_TUNGGU, t ? JSON.stringify(t) : null); $('#btn-ai').disabled = !!t; };
-  async function panggilHasil(token, aksi) {
-    const resp = await fetch(HASIL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, aksi }) });
-    const d = await resp.json().catch(() => ({}));
-    if (!resp.ok || d.ok === false) throw new Error(d.error || ('server menjawab ' + resp.status));
-    return d;
-  }
-  function renderTersimpan() {
-    const n = Object.keys(state.ai).length;
-    $('#ai-tersimpan').hidden = !n;
-    $('#ai-tersimpan-ket').textContent = n + ' kartu wajah si kecil tersimpan di HP/laptop ini.';
-  }
-  // pasang kartu ke jadwal, lalu simpan di HP ini
-  async function pasangKartu(cards) {
-    let n = 0;
-    for (const [k, v] of Object.entries(cards || {})) { if (typeof v === 'string' && DATA_GAMBAR.test(v)) { state.ai[k] = await cropCard(v); n++; } }
-    state.rows.forEach(r => { delete r.plain; });
-    const tersimpan = await kartuHP.simpan(state.ai);
-    render(); renderTersimpan();
-    return { n, tersimpan };
-  }
-  const ALASAN = { antre: 'antrean sedang terlalu panjang', ai: 'layanan AI sedang sibuk', simpan: 'penyimpanan server sedang penuh', macet: 'ada gangguan di server', terhenti: 'ada gangguan di server' };
-  const teksGagal = (d) => 'Maaf, kartu wajah belum berhasil dibuat karena ' + (ALASAN[d.pesan] || 'layanan AI sedang sibuk') + '. Kode akses belum terpakai, silakan coba lagi sebentar lagi.';
-  function teksTunggu(d) {
-    const awal = d.status === 'antre' && d.posisi > 0 ? 'Menunggu giliran: ada ' + d.posisi + ' permintaan lain sebelum Mama/Papa.' : 'Kartu wajah sedang dibuat.';
-    return awal + (d.perkiraan ? ' Perkiraan selesai ±' + d.perkiraan + ' menit lagi.' : '') + ' Link hasilnya juga dikirim ke ' + tunggu.email + '. Halaman ini boleh ditutup; kalau tetap dibuka, kartu langsung masuk sendiri.';
-  }
-  function pantau(jeda) { clearTimeout(timerPantau); if (tunggu) timerPantau = setTimeout(cekTunggu, jeda); }
-  async function cekTunggu() {
-    if (!tunggu || document.hidden) return; // halaman di latar belakang: dilanjutkan saat terlihat lagi
-    let d;
-    try { d = await panggilHasil(tunggu.token, 'cek'); }
-    catch (e) { tampilStatus('Belum bisa mengecek kartu (' + e.message + '). Dicoba lagi sebentar lagi.'); pantau(30000); return; }
-    if (d.status === 'antre' || d.status === 'proses') { tampilStatus(teksTunggu(d)); pantau(d.status === 'proses' ? 12000 : 20000); return; }
-    if (d.status === 'selesai') { await ambilHasil(tunggu.token, false); return; }
-    const t = tunggu; simpanTunggu(null);
-    if (d.status === 'gagal') tampilStatus(teksGagal(d), 'err');
-    else if (d.status === 'diambil') tampilStatus('Kartu wajah dari permintaan ini sudah dibuka lewat link di email (' + t.email + ') dan salinannya di server sudah dihapus. Kartunya tersimpan di browser tempat link itu dibuka.', 'err');
-    else tampilStatus('Permintaan kartu tidak ditemukan atau sudah kedaluwarsa. Silakan buat ulang.', 'err');
-  }
-  document.addEventListener('visibilitychange', () => { if (!document.hidden && tunggu) pantau(300); });
-  // ambil kartu: dari halaman yang sedang menunggu, atau dari link ?hasil= di email
-  async function ambilHasil(token, dariLink) {
-    let d;
-    try { d = await panggilHasil(token, 'ambil'); }
-    catch (e) {
-      if (dariLink) tampilBanner('Kartu belum bisa diambil (' + e.message + '). Coba buka lagi link di email sebentar lagi.', true);
-      else { tampilStatus('Kartu sudah jadi, tapi belum bisa diambil (' + e.message + '). Dicoba lagi sebentar lagi.'); pantau(30000); }
-      return;
-    }
-    const milikSendiri = !!tunggu && tunggu.token === token;
-    if (d.status !== 'selesai' || !d.cards) {
-      if (d.status === 'antre' || d.status === 'proses') { // link dibuka sebelum kartu jadi: tunggu di halaman ini
-        if (!milikSendiri) simpanTunggu({ token, email: 'email Mama/Papa', sejak: Date.now() });
-        $('details.ai').open = true;
-        tampilBanner('Kartu wajah masih dibuat. Tunggu di halaman ini; kartunya masuk sendiri begitu jadi.');
-        tampilStatus(teksTunggu(d)); pantau(12000); return;
-      }
-      if (milikSendiri) simpanTunggu(null);
-      const pesan = d.status === 'diambil' ? 'Kartu dari link ini sudah diambil sebelumnya dan salinannya di server sudah dihapus. Kartunya tersimpan di HP/browser tempat link pertama kali dibuka.'
-        : d.status === 'gagal' ? teksGagal(d)
-        : 'Link ini sudah tidak berlaku (lebih dari 3 hari) atau kartunya sudah diambil. Silakan buat ulang bila perlu.';
-      if (dariLink) tampilBanner(pesan, true); else tampilStatus(pesan, 'err');
-      return;
-    }
-    // link dibuka di HP/browser lain: pulihkan isian jadwal (tanpa foto) yang dikirim bersama permintaan
-    if (!milikSendiri && d.jadwal && Array.isArray(d.jadwal.rows)) { pakaiSimpanan(d.jadwal); urutkan(); store.set(); renderTemplates(); renderUrutan(); renderEmosi(); }
-    const { n, tersimpan } = await pasangKartu(d.cards);
-    // salinan di server dihapus setelah tersimpan di HP; bila browser tidak bisa menyimpan, link email tetap bisa dibuka lagi
-    if (tersimpan) { try { await panggilHasil(token, 'hapus'); } catch (e) { /* terhapus otomatis paling lama 3 hari */ } }
-    if (milikSendiri) simpanTunggu(null);
-    const catatan = d.gagal ? ' ' + d.gagal + ' kartu belum berhasil dibuat dan memakai gambar bawaan.' + (d.bisaUlang ? ' Kode akses belum terpakai, jadi boleh dicoba sekali lagi.' : '') : '';
-    const simpanTeks = tersimpan ? ' Kartu tersimpan di HP/laptop ini dan salinannya di server YAMET sudah dihapus.' : ' Browser ini tidak bisa menyimpan kartu, jadi unduh PDF sekarang. Link di email masih bisa dibuka lagi sampai ' + tanggal(d.sampai) + '.';
-    tampilStatus(n + ' kartu dengan wajah si kecil sudah dipasang di jadwal.' + catatan + simpanTeks + ' Kartu yang kurang pas bisa diketuk lalu pilih "Pakai gambar bawaan".', 'ok');
-    tampilBanner(n + ' kartu wajah si kecil sudah masuk ke jadwal.' + catatan + (tersimpan ? '' : ' Unduh PDF sekarang, karena browser ini tidak bisa menyimpan kartunya.'), false, true);
-  }
-  $('#btn-hapus-ai').addEventListener('click', async () => {
-    if (!confirm('Hapus semua kartu wajah si kecil dari HP/laptop ini? Jadwalnya tetap ada; gambarnya kembali ke gambar bawaan.')) return;
-    state.ai = {}; await kartuHP.hapus(); render(); renderTersimpan();
-    tampilStatus('Kartu wajah sudah dihapus dari HP/laptop ini.', 'ok');
-  });
-  $('#btn-ai').addEventListener('click', async () => {
-    const code = $('#kode').value.trim();
-    const f = $('#foto-wajah').files[0];
-    const email = $('#email-ortu').value.trim();
-    const FOTO_BENDA = ['mandi', 'toilet']; // gaya realistis: foto benda tetap, tanpa anak
-    const bisaAI = (k) => !IBADAH_SEMUA.includes(k) && !TANPA_AI.includes(k) && (state.style !== 'real' || !FOTO_BENDA.includes(k));
-    // kegiatan tambahan (tidak semua anak ikut) hanya dibuat bila ada di jadwal, supaya prosesnya tidak makin lama
-    const keys = [...new Set(actsTampil().filter(k => bisaAI(k) && !TAMBAHAN.includes(k)).map(imgKey).concat(state.rows.filter(r => bisaAI(r.key)).map(imgKeyRow)))];
-    // ada foto ayah/ibu: buat kartu bersama ayah maupun ibu, supaya tiap kartu bisa dipilih
-    if (state.ortuAI.ibu) Object.keys(AYAH).forEach(k => { if (!keys.includes(k)) keys.push(k); });
-    if (state.ortuAI.ayah) Object.values(AYAH).forEach(k => { if (!keys.includes(k)) keys.push(k); });
-    const ortu = {}; ['ayah', 'ibu'].forEach(o => { if (state.ortuAI[o]) ortu[o] = state.ortuAI[o]; });
-    if (tunggu) { tampilStatus('Permintaan sebelumnya masih diproses. Tunggu hasilnya dulu.', 'err'); return; }
-    if (!code) { tampilStatus('Isi kode akses dulu.', 'err'); return; }
-    if (!f) { tampilStatus('Pilih foto wajah si kecil.', 'err'); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { tampilStatus('Isi email Mama/Papa dengan benar. Link hasil kartu dikirim ke email ini.', 'err'); $('#email-ortu').focus(); return; }
-    if (!$('#setuju').checked) { tampilStatus('Centang persetujuan orang tua/wali dulu.', 'err'); return; }
-    lokal.set(KUNCI_EMAIL, email);
-    const btn = $('#btn-ai'); btn.disabled = true; tampilStatus('Mengirim foto…');
-    try {
-      const photo = await scaledImage(f, 768);
-      const resp = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code, gender: state.gender, style: state.style, photo, keys, ortu, ibuJilbab: $('#ibu-jilbab').checked, email, jadwal: JSON.stringify(simpanan()) }) });
-      const data = await resp.json().catch(() => ({}));
-      if (!resp.ok || !data.ok) throw new Error(data.error || ('Gagal (' + resp.status + ')'));
-      $('#foto-wajah').value = '';
-      if (data.cards) { // server versi lama: kartu langsung dikirim balik
-        const { n } = await pasangKartu(data.cards); btn.disabled = false;
-        tampilStatus(n + ' kartu dengan wajah si kecil sudah dipasang di jadwal dan tersimpan di HP/laptop ini.', 'ok');
-        return;
-      }
-      if (!TOKEN_OK.test(data.token || '')) throw new Error('Jawaban server tidak dikenal. Coba lagi.');
-      simpanTunggu({ token: data.token, email, sejak: Date.now() });
-      tampilStatus(teksTunggu({ status: data.posisi > 0 ? 'antre' : 'proses', posisi: data.posisi, perkiraan: data.perkiraan }));
-      pantau(15000);
-    } catch (err) {
-      tampilStatus(err.message, 'err'); btn.disabled = false;
-    }
-  });
+  $('#btn-wa').addEventListener('click', () => { $('#btn-wa').href = 'https://wa.me/' + WA_ADMIN + '?text=' + encodeURIComponent(pesanWA()); });
 
   // PDF
   $('#btn-pdf').addEventListener('click', async () => {
@@ -947,25 +766,6 @@ footer a{color:var(--green)}
   else state.rows = TEMPLATES.sekolah.rows.map(r => Object.assign({}, r));
   if (urutkan()) store.set(); // daftar lama yang belum urut jam ikut dirapikan
   renderTemplates(); render(); renderUrutan(); renderEmosi();
-  // email, permintaan kartu yang masih ditunggu, kartu wajah yang tersimpan di HP ini, lalu link ?hasil= dari email
-  $('#email-ortu').value = lokal.get(KUNCI_EMAIL) || '';
-  try {
-    const t = JSON.parse(lokal.get(KUNCI_TUNGGU) || 'null');
-    if (t && TOKEN_OK.test(t.token) && Date.now() - (t.sejak || 0) < 3 * 864e5) simpanTunggu(t); else lokal.set(KUNCI_TUNGGU, null);
-  } catch (e) { lokal.set(KUNCI_TUNGGU, null); }
-  kartuHP.ambil().then(ai => {
-    if (!ai) return;
-    Object.entries(ai).forEach(([k, u]) => { if (!state.ai[k] && typeof u === 'string' && DATA_GAMBAR.test(u)) state.ai[k] = u; });
-    render(); renderTersimpan();
-  }).finally(() => {
-    const q = new URLSearchParams(location.search).get('hasil');
-    if (q !== null) {
-      history.replaceState(null, '', location.pathname + location.hash); // token tidak ikut tersimpan di riwayat/bookmark
-      if (TOKEN_OK.test(q)) { tampilBanner('Mengambil kartu wajah dari link email…'); ambilHasil(q, true); }
-      else tampilBanner('Link hasil kartu tidak dikenal. Buka lagi link dari email.', true);
-    }
-    if (tunggu && q !== tunggu.token) { $('details.ai').open = true; tampilStatus(teksTunggu({ status: 'antre' })); pantau(500); }
-  });
 })();
 </script>
 </body>

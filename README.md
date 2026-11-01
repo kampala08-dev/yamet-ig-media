@@ -29,14 +29,12 @@ Reels: MP4 H.264 + AAC, 9:16, 3 detik–15 menit.
   `jadwal` CNAME ke `kampala08-dev.github.io` di Hostinger). Di sana gambar diambil dari situsnya sendiri
   dan isian orang tua tersimpan otomatis di browser HP (autosave). Link lama
   `https://n8n-hc8x.srv2014501.hstgr.cloud/webhook/jadwal` (workflow n8n **24 - Jadwal Bergambar**)
-  mengalihkan ke alamat ini; kartu wajah AI tetap dibuat oleh workflow itu. PDF-nya berisi papan jadwal tiga
+  mengalihkan ke alamat ini. PDF-nya berisi papan jadwal tiga
   halaman menurut jam (pagi sebelum 11.00, siang 11.00–17.59, malam mulai 18.00; lebih dari 12
   kegiatan dalam satu bagian berlanjut ke halaman berikutnya), lalu halaman kartu untuk digunting.
   Daftar kegiatan di halaman selalu urut menurut jam (hari dihitung mulai 04.00): begitu jam diubah,
   kegiatan pindah ke tempatnya; tombol naik/turun hanya muncul untuk kegiatan yang jamnya sama.
-  Foto ayah & ibu (opsional) tampil di judul papan. Saat membuat kartu wajah, foto itu ikut dikirim
-  ke MiniMax sehingga kartu belajar bersama orang tua dan dengar dongeng memakai wajah ayah/ibu
-  (si kecil tampak dari belakang, karena MiniMax hanya menerima satu wajah acuan per gambar).
+  Foto ayah & ibu (opsional) hanya tampil di judul papan dan tidak dikirim ke mana pun.
   Tiap kartu bersama orang tua bisa dipilih "Bersama ibu" atau "Bersama ayah"; bila hanya satu foto
   diisi, kartu itu memakai ayah/ibu yang sesuai.
 - `jadwal/foto/`: gambar bawaan gaya foto realistis (`<kegiatan>-L.jpg` anak laki-laki, `-P.jpg` perempuan),
@@ -72,20 +70,9 @@ Reels: MP4 H.264 + AAC, 9:16, 3 detik–15 menit.
   Higgsfield GPT Image 2.5 dari `tata-letak-papan-emosi.png` (tata letak teks saja) dan anak acuan yang sama
   dengan kartu foto. Halaman memilih versinya otomatis: laki-laki, perempuan, atau perempuan berjilbab bila
   agamanya Islam. Bila dicentang, papan ini menjadi halaman A4 mendatar di akhir PDF.
-- Kartu bergambar wajah anak dibuat lewat `POST /webhook/jadwal/buat` (butuh kode akses sekali pakai dan email
-  orang tua): semua kegiatan sekaligus dengan MiniMax image-01, mengikuti gaya yang dipilih (foto realistis atau kartun);
-  kegiatan tambahan hanya bila ada di jadwal.
-  Pada gaya realistis, kartu mandi dan ke toilet tetap memakai gambar bawaan berisi benda, tanpa anak.
-  Kartu ibadah selalu memakai gambar bawaan (MiniMax belum bisa menjamin gerakan ibadah dan jilbab yang benar).
-- Antrean & email (workflow n8n **24** dan **25**): permintaan langsung dijawab `{token, posisi, perkiraan}` lalu menunggu
-  giliran di Data Table *Antrean Jadwal Bergambar*. Satu permintaan diproses dalam satu waktu karena MiniMax dibatasi
-  ~10 gambar/menit; maksimal 6 permintaan aktif, 900 kartu per 24 jam, menyerah (email maaf, kode tetap berlaku) bila
-  antre lebih dari 45 menit; satu kode tidak bisa dipakai dua permintaan sekaligus. Kartu yang jadi dan isian jadwal (tanpa
-  foto) disimpan sementara di Data Table *Hasil Kartu Jadwal*, lalu link `https://jadwal.yametpalembang.io/?hasil=<token>`
-  dikirim dari `admin@yametpalembang.io` (alias kotak riokampala@, kredensial SMTP n8n "SMTP YAMET admin").
-  Halaman yang tetap dibuka mengecek status lewat `POST /webhook/jadwal/hasil` `{token, aksi: cek|ambil|hapus}` dan
-  memasukkan kartu sendiri; link email juga memulihkan jadwal bila dibuka di HP/browser lain. Setelah kartu tersimpan di
-  HP (IndexedDB, bisa dihapus dengan tombol "Hapus kartu wajah dari HP ini"), salinan di server langsung dihapus;
-  pembersihan tiap jam di workflow 25 menghapus sisa kartu dan antrean yang lebih dari 3 hari dan menandai permintaan
-  yang terhenti (email maaf). Foto anak tidak disimpan di repo ini, di Data Table, maupun di riwayat n8n (riwayat
-  eksekusi kedua workflow dimatikan; foto hanya ada di memori eksekusi selama antre).
+- Kartu dengan wajah si kecil (langkah 5, khusus pasien YAMET) dibuat admin, bukan otomatis: tombol WhatsApp membuka chat
+  ke admin (0852 1218 8897) dengan pesan berisi nama, pilihan gambar, papan emosi, dan daftar jadwal; orang tua melampirkan
+  PDF jadwal dan satu foto wajah si kecil, lalu admin mengirim balik PDF dengan wajah si kecil (dibuat dengan bantuan AI).
+  Fitur otomatis lama (MiniMax lewat `POST /webhook/jadwal/buat`, antrean, email) dimatikan per 1 Nov 2026: uji 24 ekspresi
+  menunjukkan MiniMax ikut menyalin senyum dari foto acuan, jadi papan emosi tidak bisa dibuat dengan wajah anak. Node POST di
+  workflow n8n 24 dinonaktifkan (pengalihan link lama tetap jalan) dan workflow 25 tidak aktif.

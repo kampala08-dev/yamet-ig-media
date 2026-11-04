@@ -177,7 +177,7 @@ footer a{color:var(--green)}
 
 <section aria-labelledby="h-wajah">
   <h2 id="h-wajah"><span class="num">5</span>Kartu dengan wajah si kecil</h2>
-  <p class="hint">Opsional, <b>khusus pasien YAMET</b>. Gambar bawaan di atas sudah bisa langsung dipakai. Kalau ingin kartu kegiatan dan papan emosi memakai wajah si kecil, admin YAMET yang membuatkan.</p>
+  <p class="hint">Opsional, <b>khusus pasien YAMET Palembang Dempo</b>. Gambar bawaan di atas sudah bisa langsung dipakai. Kalau ingin kartu kegiatan dan papan emosi memakai wajah si kecil, admin YAMET yang membuatkan.</p>
   <ol class="langkah">
     <li>Unduh PDF jadwal di langkah 4.</li>
     <li>Ketuk tombol di bawah untuk chat admin lewat WhatsApp. Pesannya sudah berisi ringkasan jadwal.</li>
@@ -551,7 +551,7 @@ footer a{color:var(--green)}
   function pesanWA() {
     const AGAMA = { islam: 'Islam', kristen: 'Kristen', buddha: 'Buddha' };
     const baris = state.rows.map(r => (r.time ? r.time.replace(':', '.') + ' ' : '') + (r.label || ACTS[r.key]));
-    return 'Halo Admin YAMET, saya ingin dibuatkan jadwal bergambar dengan wajah si kecil.\n\n' +
+    return 'Halo Admin YAMET Palembang Dempo, si kecil pasien terapi di YAMET Dempo. Saya ingin dibuatkan jadwal bergambar dengan wajah si kecil.\n\n' +
       'Nama: ' + (state.name || '-') + '\n' +
       'Gambar: anak ' + (state.gender === 'P' ? 'perempuan' : 'laki-laki') + ', ' + (state.style === 'kartun' ? 'kartun' : 'foto realistis') + ', kartu ibadah ' + AGAMA[state.agama] + '\n' +
       'Papan emosi: ' + (state.emosi ? 'ya' : 'tidak') + '\n\n' +

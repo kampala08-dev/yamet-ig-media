@@ -70,7 +70,7 @@ Reels: MP4 H.264 + AAC, 9:16, 3 detik–15 menit.
   Higgsfield GPT Image 2.5 dari `tata-letak-papan-emosi.png` (tata letak teks saja) dan anak acuan yang sama
   dengan kartu foto. Halaman memilih versinya otomatis: laki-laki, perempuan, atau perempuan berjilbab bila
   agamanya Islam. Bila dicentang, papan ini menjadi halaman A4 mendatar di akhir PDF.
-- Kartu dengan wajah si kecil (langkah 5, khusus pasien YAMET) dibuat admin, bukan otomatis: tombol WhatsApp membuka chat
+- Kartu dengan wajah si kecil (langkah 5, khusus pasien YAMET Palembang Dempo) dibuat admin, bukan otomatis: tombol WhatsApp membuka chat
   ke admin (0852 1218 8897) dengan pesan berisi nama, pilihan gambar, papan emosi, dan daftar jadwal; orang tua melampirkan
   PDF jadwal dan satu foto wajah si kecil, lalu admin mengirim balik PDF dengan wajah si kecil (dibuat dengan bantuan AI).
   Fitur otomatis lama (MiniMax lewat `POST /webhook/jadwal/buat`, antrean, email) dimatikan per 1 Nov 2026: uji 24 ekspresi
